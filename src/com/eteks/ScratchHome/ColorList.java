@@ -11,29 +11,31 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import com.eteks.sweethome3d.model.Home;
-import com.eteks.sweethome3d.model.HomePieceOfFurniture;
+public class ColorList {
 
-public class FurnitureList {
-
-    private int hash = 0;
+    private String color = null;
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public int getHashFromFurniture(Home home) {
+	public String getColor() {
 	
 	    JLabel label = new JLabel("Chose a furniture");
-	    ArrayList<String> hashcode = new ArrayList<String>();
+	    ArrayList<String> s = new ArrayList<String>();
+	    s.add("red");
+	    s.add("blue");
+	    s.add("green");
+	    s.add("black");
+	    s.add("white");
+	    s.add("gray");
+	    s.add("yellow");
 	    
-	    for (HomePieceOfFurniture fourniture : home.getFurniture()) {
-			hashcode.add(String.valueOf(fourniture.hashCode()));
-		}
-		JList list = new JList(hashcode.toArray());
+	    
+	    JList list = new JList(s.toArray());
 	    
 
 	    list.addListSelectionListener(new ListSelectionListener() {
 	    	 public void valueChanged(ListSelectionEvent evt) {
 
-		            hash = Integer.valueOf(hashcode.get(evt.getFirstIndex()));
+		            color = s.get(evt.getFirstIndex());
 		            JList button = (JList)evt.getSource();
 		            SwingUtilities.getWindowAncestor(button).dispose();
 	    	 }
@@ -57,6 +59,6 @@ public class FurnitureList {
 	    dialog.setLocationRelativeTo(null);
 	    dialog.setVisible(true);
 	
-	    return hash;
+	    return color;
 	}
 }
