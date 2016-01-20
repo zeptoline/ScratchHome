@@ -66,14 +66,14 @@ public class CommunicationClient implements Runnable {
 		if (smtpSocket != null && os != null & d!= null) {
 			try {
 
-
-
-
+				/*
+				 * Lignes pour envoyer les informations sur les meubles
+				 */
 				for (HomePieceOfFurniture fourniture : home.getFurniture()) {
 					os.println(fourniture.getName()+"   "+fourniture.hashCode());
 				}
 				os.println("QUIT");
-
+				/////
 
 
 				boolean choseFurniture = true;
