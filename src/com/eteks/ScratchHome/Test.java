@@ -14,6 +14,8 @@ public class Test implements Runnable{
 
 	private volatile boolean running = true;
 
+
+
 	private Home home;
 	public Test(Home home) {
 		this.home = home;
@@ -26,17 +28,15 @@ public class Test implements Runnable{
 
 	public void run() {
 
-		running = true;
 
-		ServerSocket server = null;
 		String line;
 		BufferedReader d;
 		PrintStream os;
-
-		Socket clientSocket = null;
+		ServerSocket server = null;
 
 		try 
 		{
+			
 			server = new ServerSocket(2016);
 		}
 		catch (IOException e) 
@@ -45,6 +45,7 @@ public class Test implements Runnable{
 		}   
 
 
+		Socket clientSocket = null;
 		try {
 			clientSocket = server.accept();
 			d = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
@@ -56,14 +57,19 @@ public class Test implements Runnable{
 			}
 			os.println("QUIT");
 
+
+
 			boolean choseFurniture = true;
 			int hash = 0;
 			int color = 0;
+
+
+			running = true;
 			while(running) {
-				
+
 				line = d.readLine();
-				
-				
+
+
 				if(choseFurniture) {
 					hash = Integer.valueOf(line);
 					choseFurniture = false;
@@ -94,6 +100,13 @@ public class Test implements Runnable{
 				System.out.println(line); 
 
 			}
+
+			server.close();
+			server = null;
+			clientSocket.close();
+			d.close();
+			os.close();
+
 		}   
 		catch (IOException e) {
 			System.out.println(e);
