@@ -1,4 +1,4 @@
-package com.eteks.ScratchHome;
+package com.Dialog;
 
 import java.awt.BorderLayout;
 import java.util.ArrayList;

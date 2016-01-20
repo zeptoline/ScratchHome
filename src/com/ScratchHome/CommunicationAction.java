@@ -1,4 +1,4 @@
-package com.eteks.ScratchHome;
+package com.ScratchHome;
 
 
 
@@ -6,13 +6,13 @@ import com.eteks.sweethome3d.model.Home;
 import com.eteks.sweethome3d.plugin.PluginAction;
 
 
-public class TestAction extends PluginAction {
+public class CommunicationAction extends PluginAction {
 
 
 	private Home home;
 	
 	private Thread thread = null;
-	private PluginClient te = null;
+	private CommunicationClient te = null;
 
 	private boolean running = false;
 
@@ -31,7 +31,7 @@ public class TestAction extends PluginAction {
 			
 			System.out.println("0");
 			if (te == null)
-				te = new PluginClient(home);
+				te = new CommunicationClient(home);
 			thread = new Thread(te);
 			thread.start();
 			putPropertyValue(Property.NAME, "Status en cours : ON");
@@ -40,7 +40,7 @@ public class TestAction extends PluginAction {
 		}
 	}
 
-	public TestAction(Home home) {
+	public CommunicationAction(Home home) {
 		this.home = home;
 		putPropertyValue(Property.NAME, "Test");
 		putPropertyValue(Property.MENU, "ScratchHome");

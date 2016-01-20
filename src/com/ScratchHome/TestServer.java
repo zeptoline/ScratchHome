@@ -1,4 +1,4 @@
-package com.eteks.ScratchHome;
+package com.ScratchHome;
 
 import java.io.BufferedReader;
 import java.io.IOException;

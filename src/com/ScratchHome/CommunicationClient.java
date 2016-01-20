@@ -1,4 +1,4 @@
-package com.eteks.ScratchHome;
+package com.ScratchHome;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,7 +10,7 @@ import java.net.UnknownHostException;
 import com.eteks.sweethome3d.model.Home;
 import com.eteks.sweethome3d.model.HomePieceOfFurniture;
 
-public class PluginClient implements Runnable {
+public class CommunicationClient implements Runnable {
 
 	private volatile boolean running = true;
 
@@ -18,7 +18,7 @@ public class PluginClient implements Runnable {
 	private volatile Socket smtpSocket = null;
 
 	private Home home;
-	public PluginClient(Home home) {
+	public CommunicationClient(Home home) {
 		this.home = home;
 	}
 

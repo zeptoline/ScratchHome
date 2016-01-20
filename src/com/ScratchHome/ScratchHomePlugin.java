@@ -1,4 +1,4 @@
-package com.eteks.ScratchHome;
+package com.ScratchHome;
 
 import com.eteks.sweethome3d.model.Home;
 import com.eteks.sweethome3d.model.UserPreferences;
@@ -16,8 +16,8 @@ public class ScratchHomePlugin extends Plugin {
 		UserPreferences preference = getUserPreferences();
 		
 		
-		return new PluginAction [] {new ScratchHomeAction(home, homeCont, preference), new ScratchHomeAction2(home, homeCont, preference), new TestAction(home)};
-		//return null;
+		return new PluginAction [] {new ScratchHomeAction(home, homeCont, preference), new ScratchHomeAction2(home, homeCont, preference), new CommunicationAction(home)};
+
 	}
 
 }

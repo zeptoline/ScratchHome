@@ -1,4 +1,4 @@
-package com.eteks.ScratchHome;
+package com.ScratchHome;
 
 import com.eteks.sweethome3d.model.Home;
 import com.eteks.sweethome3d.model.HomePieceOfFurniture;

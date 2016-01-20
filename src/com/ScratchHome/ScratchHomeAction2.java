@@ -1,7 +1,9 @@
-package com.eteks.ScratchHome;
+package com.ScratchHome;
 
 
 
+import com.Dialog.ColorList;
+import com.Dialog.FurnitureList;
 import com.eteks.sweethome3d.model.Home;
 import com.eteks.sweethome3d.model.HomePieceOfFurniture;
 import com.eteks.sweethome3d.model.UserPreferences;
