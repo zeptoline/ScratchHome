@@ -44,31 +44,24 @@ public class ScratchHomeAction2 extends PluginAction {
 	public int getColor() {
 		ColorList cl = new ColorList();
 		int color = 0;
-		switch (cl.getColor()) {
-			case "red" :
+
+		String clColor = cl.getColor();
+
+		if (clColor.equals("red"))
 				color =  -65536;
-				break;
-	    case "blue" :
+	  else if (clColor.equals("blue"))
 				color = -16776961;
-				break;
-	    case "green" :
+	  else if (clColor.equals("green"))
 				color =  -16711936;
-				break;
-	    case "black" :
+	  else if (clColor.equals("black"))
 				color = -16777216;
-				break;
-	    case "white" :
+	  else if (clColor.equals("white"))
 				color = -1;
-				break;
-	    case "gray" :
+	  else if (clColor.equals("gray"))
 				color =  -7829368;
-				break;
-	    case "yellow" :
+	  else if (clColor.equals("yellow"))
 				color =-256 ;
-				break;
-		default:
-			break;
-		}
+
 		return color;
 	}
 

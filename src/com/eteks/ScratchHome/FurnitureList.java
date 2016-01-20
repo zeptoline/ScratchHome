@@ -22,7 +22,7 @@ public class FurnitureList {
 	public int getHashFromFurniture(Home home) {
 	
 	    JLabel label = new JLabel("Chose a furniture");
-	    ArrayList<String> hashcode = new ArrayList<String>();
+	    final ArrayList<String> hashcode = new ArrayList<String>();
 	    
 	    for (HomePieceOfFurniture fourniture : home.getFurniture()) {
 			hashcode.add(String.valueOf(fourniture.hashCode()));

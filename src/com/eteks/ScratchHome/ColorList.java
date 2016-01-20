@@ -19,7 +19,7 @@ public class ColorList {
 	public String getColor() {
 	
 	    JLabel label = new JLabel("Chose a furniture");
-	    ArrayList<String> s = new ArrayList<String>();
+	    final ArrayList<String> s = new ArrayList<String>();
 	    s.add("red");
 	    s.add("blue");
 	    s.add("green");
