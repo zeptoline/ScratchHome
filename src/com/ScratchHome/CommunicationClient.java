@@ -68,62 +68,63 @@ public class CommunicationClient implements Runnable {
 
 				/*
 				 * Lignes pour envoyer les informations sur les meubles
-				 */
+
 				for (HomePieceOfFurniture fourniture : home.getFurniture()) {
 					os.println(fourniture.getName()+"   "+fourniture.hashCode());
 				}
-				os.println("QUIT");
-				/////
+				os.print("QUIT");
+				///// */
 
 
 				boolean choseFurniture = true;
 				int hash = 0;
 				int color = 0;
 
-				if(d.readLine().equals("BEGIN")) {
-					running = true;
-					while(running) {
+				//if(d.readLine().equals("BEGIN")) {
+				running = true;
+				while(running) {
 
-						line = d.readLine();
+					line = d.readLine();
+					System.out.println(line);
 
-						if(choseFurniture) {
-							try {
-								hash = Integer.valueOf(line);
-								choseFurniture = false;
-							}
-							catch (NumberFormatException e) {
-								System.out.println(e);
-								choseFurniture = true;
-							}
-						} else {
-							if (line.equals("red"))
-								color =  -65536;
-							else if (line.equals("blue"))
-								color = -16776961;
-							else if (line.equals("green"))
-								color =  -16711936;
-							else if (line.equals("black"))
-								color = -16777216;
-							else if (line.equals("white"))
-								color = -1;
-							else if (line.equals("gray"))
-								color =  -7829368;
-							else if (line.equals("yellow"))
-								color =-256 ;
-							else
-								color = 0;
-
-							if(hash != 0 && color != 0) {
-								changeColor(hash, color, home);
-							} 
-							choseFurniture = true;
-
+					if(choseFurniture) {
+						try {
+							hash = Integer.valueOf(line);
+							choseFurniture = false;
 						}
-						System.out.println(line); 
+						catch (NumberFormatException e) {
+							System.out.println(e);
+							choseFurniture = true;
+						}
+					} else {
+						if (line.equals("red"))
+							color =  -65536;
+						else if (line.equals("blue"))
+							color = -16776961;
+						else if (line.equals("green"))
+							color =  -16711936;
+						else if (line.equals("black"))
+							color = -16777216;
+						else if (line.equals("white"))
+							color = -1;
+						else if (line.equals("gray"))
+							color =  -7829368;
+						else if (line.equals("yellow"))
+							color =-256 ;
+						else
+							color = 0;
+
+						if(hash != 0 && color != 0) {
+							changeColor(hash, color, home);
+						} 
+						choseFurniture = true;
 
 					}
+					System.out.println(line); 
+
 				}
-				
+				//}
+
 				smtpSocket.close();
 				d.close();
 				os.close();

@@ -16,7 +16,7 @@ public class ScratchHomePlugin extends Plugin {
 		UserPreferences preference = getUserPreferences();
 		
 		
-		return new PluginAction [] {new ScratchHomeAction(home, homeCont, preference), new ScratchHomeAction2(home, homeCont, preference), new CommunicationAction(home)};
+		return new PluginAction [] {new ScratchHomeAction(home, homeCont, preference), new ScratchHomeAction2(home, homeCont, preference), new CommunicationAction(home), new ShowListe(home)};
 
 	}
 
