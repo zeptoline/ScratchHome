@@ -15,7 +15,7 @@ public class AlertEvent {
 
 	    JFrame frame = new JFrame();
         frame.setSize(500,500);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);       
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.add(panel);
         frame.setVisible(true);
 	}

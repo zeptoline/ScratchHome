@@ -7,18 +7,26 @@ import com.eteks.sweethome3d.plugin.PluginAction;
 
 
 public class ScratchAction extends PluginAction {
-	
+
+	private boolean instanciate = true;
+
 	private Home home;
 	private Thread thread = null;
-
+	private Thread control = null;
+	private ControlPanel cp = null;
+	private ScratchListener sl = null;
 
 	public void execute() {
-		ScratchListener sl = new ScratchListener(home);
-		thread = new Thread(sl);
-		thread.start();
-
+		if(instanciate) {
+			sl = new ScratchListener(home);
+			cp = new ControlPanel(sl);
+			thread = new Thread(sl);
+			thread.start();
+			control = new Thread(cp);
+			control.start();
+		}
 		putPropertyValue(Property.NAME, "Listening Scratch");
-		
+
 	}
 
 	public ScratchAction(Home home) {
@@ -26,7 +34,7 @@ public class ScratchAction extends PluginAction {
 		putPropertyValue(Property.NAME, "Start listening Scratch");
 		putPropertyValue(Property.MENU, "ScratchHome");
 
-		
+
 		setEnabled(true);
 	}
 

@@ -18,50 +18,88 @@ public class ScratchListener implements Runnable{
 
 	private static InputStream sockIn;
 	private static OutputStream sockOut;
-	
-	
+
+
 	private boolean running = true;
 	private ServerSocket serverSock = null;
-	
+
 	private Home home;
-	
+
+
+
+
+
 	public ScratchListener (Home home) {
 		this.home = home;
 	}
-	
-	
-	
-	
-	public void terminate() {
+
+	public boolean isRunning() {
+		return running;
+	}
+
+
+	private boolean suspended = false;
+	private void waitWhileSuspended() throws InterruptedException  {
+		while (true) {
+			if(suspended) {
+				System.out.println("Server Suspended");
+				wait();
+				System.out.println("Server resumed");
+			}
+		}
+	}
+	public void suspend() {
+		suspended = true;
+	}
+	public void resume() {
+		suspended = false;
+		this.notify();
+	}
+
+
+
+
+
+
+	public void terminate()  {
 		running = false;
 		try {
-			serverSock.setSoTimeout(1);
-		} catch (SocketException e) {}
+			serverSock.close();
+		} catch (IOException e) {}
+		System.out.println("tryin' to crash it");
 	}
 
 	public void run() {
 		try {
+			waitWhileSuspended();
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+		}
 
+		try {
+			System.out.println("Server launched");
 			serverSock = new ServerSocket(PORT);
 			running = true;
 			while (running) {
-				Socket sock = serverSock.accept();
-				sockIn = sock.getInputStream();
-				sockOut = sock.getOutputStream();
 				try {
-					handleRequest();
-				} catch (Exception e) {
-					e.printStackTrace(System.err);
-					sendResponse("unknown server error");
-				}
-				sock.close();
+					Socket sock = serverSock.accept();
+					sockIn = sock.getInputStream();
+					sockOut = sock.getOutputStream();
+					try {
+						handleRequest();
+					} catch (Exception e) {
+						e.printStackTrace(System.err);
+					}
+					sock.close();
+					sockIn.close();
+					sockOut.close();
+				}catch(SocketException e){}
 
 				if (!running)
 					break;
 			}
-			serverSock.close();
-			
-			
+			System.out.println("The server has been shut down");
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -125,10 +163,10 @@ public class ScratchListener implements Runnable{
 
 	private void doCommand(String cmdAndArgs) {
 		String[] cmd = cmdAndArgs.split("/"); 
-		
-		
+
+
 		HomeModifier.changeColor(Integer.valueOf(cmd[1]), Integer.valueOf(cmd[2]), this.home);
-		
+
 	}
 
 }
