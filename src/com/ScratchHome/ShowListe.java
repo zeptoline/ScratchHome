@@ -11,6 +11,7 @@ public class ShowListe extends PluginAction{
 
 		for (HomePieceOfFurniture fourniture : home.getFurniture()) {
 			System.out.println(fourniture.getName()+"   "+fourniture.hashCode());
+			new AlertEvent(fourniture.getName()+"   "+fourniture.hashCode());
 		}
 	}
 

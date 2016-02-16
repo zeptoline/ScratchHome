@@ -8,18 +8,17 @@ import com.eteks.sweethome3d.plugin.PluginAction;
 
 public class ScratchAction extends PluginAction {
 	
-	@SuppressWarnings("unused")
 	private Home home;
 	private Thread thread = null;
 
 
 	public void execute() {
-		ScratchListener sl = new ScratchListener();
+		ScratchListener sl = new ScratchListener(home);
 		thread = new Thread(sl);
 		thread.start();
+
+		putPropertyValue(Property.NAME, "Listening Scratch");
 		
-		
-		setEnabled(true);
 	}
 
 	public ScratchAction(Home home) {

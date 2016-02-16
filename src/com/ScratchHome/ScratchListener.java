@@ -8,6 +8,8 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.Arrays;
 
+import com.eteks.sweethome3d.model.Home;
+
 
 
 public class ScratchListener implements Runnable{
@@ -17,15 +19,23 @@ public class ScratchListener implements Runnable{
 	private static InputStream sockIn;
 	private static OutputStream sockOut;
 	
+	
 	private boolean running = true;
 	private ServerSocket serverSock = null;
+	
+	private Home home;
+	
+	public ScratchListener (Home home) {
+		this.home = home;
+	}
+	
+	
 	
 	
 	public void terminate() {
 		running = false;
 		try {
 			serverSock.setSoTimeout(1);
-			
 		} catch (SocketException e) {}
 	}
 
@@ -46,10 +56,7 @@ public class ScratchListener implements Runnable{
 				}
 				sock.close();
 
-				
-				
-				boolean idiot = false;
-				if (idiot)
+				if (!running)
 					break;
 			}
 			serverSock.close();
@@ -61,7 +68,7 @@ public class ScratchListener implements Runnable{
 	}
 
 
-	private static void handleRequest() throws IOException {
+	private void handleRequest() throws IOException {
 		String httpBuf = "";
 		int i;
 
@@ -89,10 +96,12 @@ public class ScratchListener implements Runnable{
 		header = header.substring(5, i - 1);
 		if (header.equals("favicon.ico")) return; // igore browser favicon.ico requests
 		else if (header.equals("crossdomain.xml")) sendPolicyFile();
+		else if (header.equals("poll")) return;
+		else if (header.equals("reset_all")) return;
 		else doCommand(header);
 	}
 
-	private static void sendPolicyFile() {
+	private void sendPolicyFile() {
 		// Send a Flash null-teriminated cross-domain policy file.
 		String policyFile =
 				"<cross-domain-policy>\n" +
@@ -101,7 +110,7 @@ public class ScratchListener implements Runnable{
 		sendResponse(policyFile);
 	}
 
-	private static void sendResponse(String s) {
+	private void sendResponse(String s) {
 		String crlf = "\r\n";
 		String httpResponse = "HTTP/1.1 200 OK" + crlf;
 		httpResponse += "Content-Type: text/html; charset=ISO-8859-1" + crlf;
@@ -114,11 +123,12 @@ public class ScratchListener implements Runnable{
 		} catch (Exception ignored) { }
 	}
 
-	private static void doCommand(String cmdAndArgs) {
-		System.out.println(cmdAndArgs);
+	private void doCommand(String cmdAndArgs) {
+		String[] cmd = cmdAndArgs.split("/"); 
+		
+		
+		HomeModifier.changeColor(Integer.valueOf(cmd[1]), Integer.valueOf(cmd[2]), this.home);
+		
 	}
-
-
-
 
 }
