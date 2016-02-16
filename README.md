@@ -12,4 +12,4 @@ fr
 ### TODO
 - gestion des erreurs du coté plugin
 - système création d'un fichier pour que Scratch ai les informations nécéssaires pour créer des briques d'action
-- le serveur relay (un prototype en Java se trouve [sous com/server](https://github.com/zeptoline/ScratchHome/blob/master/src/com/server/TestServer.java)). Le serveur sera probablement créer en python pour être plus simple à utiliser
+
