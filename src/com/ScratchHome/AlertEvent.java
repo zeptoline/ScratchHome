@@ -1,4 +1,4 @@
-package com.ScratchHome;
+package src.com.ScratchHome;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;

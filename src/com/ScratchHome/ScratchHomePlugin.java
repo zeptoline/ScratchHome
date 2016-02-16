@@ -1,4 +1,4 @@
-package com.ScratchHome;
+package src.com.ScratchHome;
 
 import com.eteks.sweethome3d.model.Home;
 import com.eteks.sweethome3d.plugin.Plugin;
