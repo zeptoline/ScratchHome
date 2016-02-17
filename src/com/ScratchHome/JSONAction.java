@@ -1,4 +1,4 @@
-package src.com.ScratchHome;
+package com.ScratchHome;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -7,6 +7,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 
 import com.eteks.sweethome3d.model.Home;
@@ -19,7 +20,11 @@ public class JSONAction extends PluginAction{
 	JFileChooser chooser = new JFileChooser();
 	
 	public void execute() {
-		createJSON(this.home);
+		if(!(home.getFurniture().isEmpty())) {
+			createJSON(this.home);
+		} else {
+			JOptionPane.showMessageDialog(null,"La scène ne contient aucun meuble !");
+		}
 	}
 	
 	public JSONAction(Home home) {
@@ -40,7 +45,7 @@ public class JSONAction extends PluginAction{
         for (HomePieceOfFurniture fourniture : home.getFurniture()) {
             //vocStringBuffer.append(fourniture.getName()+"   "+fourniture.hashCode());
             //vocStringBuffer.append("\n");
-            listElem.add(fourniture.getName()+" ("+fourniture.hashCode()+")");
+            listElem.add(fourniture.getName()+"("+fourniture.hashCode()+")");
         }
 
         for( int i = 0; i < listElem.size(); i++){
@@ -72,12 +77,13 @@ public class JSONAction extends PluginAction{
 	    int n = chooser.showSaveDialog(null);
 	            
 	    if (n==JFileChooser.APPROVE_OPTION) {
-	        System.out.printf("Le fichier choisi est\t%s\n",chooser.getSelectedFile());
 	        String chemin = this.chooser.getSelectedFile().toString();
-	    	this.writeFile(vocStringBuffer.toString(), chemin+".sb2", false);
-	    } else {
-	        System.err.printf("Aucun fichier choisi (code %d)\n",n);
-	    }
+	        if(chemin.substring(chemin.length()-4, chemin.length()).equals(".sb2")) {
+	        	this.writeFile(vocStringBuffer.toString(), chemin, false);
+	        } else {
+	        	this.writeFile(vocStringBuffer.toString(), chemin+".sb2", false);
+	        }
+	    } 
 	}
 			
 	
