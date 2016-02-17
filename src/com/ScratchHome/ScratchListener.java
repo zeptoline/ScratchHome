@@ -39,8 +39,6 @@ public class ScratchListener implements Runnable{
 	}
 
 
-
-
 	public void terminate()  {
 		running = false;
 		try {
@@ -48,10 +46,11 @@ public class ScratchListener implements Runnable{
 		} catch (IOException e) {}
 		System.out.println("tryin' to crash it");
 		cp.changeMessage("Tryin' to crash it");
+		cp.changeStatus(false);
 	}
 
 	public void run() {
-
+		cp.changeStatus(true);
 		try {
 			System.out.println("Server launched");
 			serverSock = new ServerSocket(PORT);
@@ -139,12 +138,12 @@ public class ScratchListener implements Runnable{
 	}
 
 	private void doCommand(String cmdAndArgs) {
-		cp.changeMessage2(cmdAndArgs);
 		String[] cmd = cmdAndArgs.split("/"); 
 
 		cmd[1] = cmd[1].replaceAll("[\\D]", "");
-		cmd[1] = cmd[1].substring(2);
+		
 		cp.changeMessage(cmd[0]+" "+cmd[1]+" "+cmd[2]);
+		
 		int color = 0;
 		
 		switch (cmd[2].toLowerCase()) {

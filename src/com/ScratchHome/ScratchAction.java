@@ -24,6 +24,8 @@ public class ScratchAction extends PluginAction {
 			thread.start();
 			control = new Thread(cp);
 			control.start();
+			
+			instanciate = false;
 		}
 		putPropertyValue(Property.NAME, "Listening Scratch");
 
@@ -31,7 +33,14 @@ public class ScratchAction extends PluginAction {
 	public void closeListener() {
 		sl.terminate();
 	}
-	
+
+	public void reupListener() {
+		if (!sl.isRunning()) {
+			sl = new ScratchListener(home, cp);
+			thread = new Thread(sl);
+			thread.start();
+		}
+	}
 	
 	public ScratchAction(Home home) {
 		this.home = home;
