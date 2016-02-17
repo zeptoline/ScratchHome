@@ -1,4 +1,4 @@
-package com.ScratchHome;
+package src.com.ScratchHome;
 
 import java.io.File;
 import java.io.FileNotFoundException;

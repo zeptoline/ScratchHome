@@ -14,7 +14,7 @@ import com.eteks.sweethome3d.model.Home;
 
 public class ScratchListener implements Runnable{
 
-	private static final int PORT = 12345; // set to your extension's port number
+	private static final int PORT = 2016; // set to your extension's port number
 
 	private static InputStream sockIn;
 	private static OutputStream sockOut;
@@ -24,39 +24,19 @@ public class ScratchListener implements Runnable{
 	private ServerSocket serverSock = null;
 
 	private Home home;
+	private ControlPanel cp;
 
 
 
 
-
-	public ScratchListener (Home home) {
+	public ScratchListener (Home home, ControlPanel cp) {
 		this.home = home;
+		this.cp = cp;
 	}
 
 	public boolean isRunning() {
 		return running;
 	}
-
-
-	private boolean suspended = false;
-	private void waitWhileSuspended() throws InterruptedException  {
-		while (true) {
-			if(suspended) {
-				System.out.println("Server Suspended");
-				wait();
-				System.out.println("Server resumed");
-			}
-		}
-	}
-	public void suspend() {
-		suspended = true;
-	}
-	public void resume() {
-		suspended = false;
-		this.notify();
-	}
-
-
 
 
 
@@ -67,14 +47,10 @@ public class ScratchListener implements Runnable{
 			serverSock.close();
 		} catch (IOException e) {}
 		System.out.println("tryin' to crash it");
+		cp.changeMessage("Tryin' to crash it");
 	}
 
 	public void run() {
-		try {
-			waitWhileSuspended();
-		} catch (InterruptedException e1) {
-			e1.printStackTrace();
-		}
 
 		try {
 			System.out.println("Server launched");
@@ -99,6 +75,7 @@ public class ScratchListener implements Runnable{
 					break;
 			}
 			System.out.println("The server has been shut down");
+			cp.changeMessage("Crashing server was successful !");
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -162,10 +139,29 @@ public class ScratchListener implements Runnable{
 	}
 
 	private void doCommand(String cmdAndArgs) {
+		cp.changeMessage2(cmdAndArgs);
 		String[] cmd = cmdAndArgs.split("/"); 
 
+		cmd[1] = cmd[1].replaceAll("[\\D]", "");
+		cmd[1] = cmd[1].substring(2);
+		cp.changeMessage(cmd[0]+" "+cmd[1]+" "+cmd[2]);
+		int color = 0;
+		
+		switch (cmd[2].toLowerCase()) {
+		case "noir":
+			color = -15000000;
+			break;
 
-		HomeModifier.changeColor(Integer.valueOf(cmd[1]), Integer.valueOf(cmd[2]), this.home);
+		case "jaune":
+			color = -256;
+			break;
+
+		default:
+			color = 0;
+			break;
+		}
+
+		HomeModifier.changeColor(Integer.valueOf(cmd[1]), color, this.home);
 
 	}
 

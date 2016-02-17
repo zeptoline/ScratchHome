@@ -6,15 +6,19 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public class ControlPanel implements Runnable{
 
-	private ScratchListener sl;
+	private ScratchAction sa;
+	private JLabel message;
+	private JLabel message2;
 	
-	
-	public ControlPanel (ScratchListener sl) {
-		this.sl = sl;
+	public ControlPanel (ScratchAction sa) {
+		this.sa = sa;
+		message = new JLabel("Server launched");
+		message2 = new JLabel("autre message");
 	}
 
 	public void run() {
@@ -24,29 +28,14 @@ public class ControlPanel implements Runnable{
 		terminate.addActionListener(new ActionListener() {
 			
 			public void actionPerformed(ActionEvent e) {
-				sl.terminate();
+				sa.closeListener();
 			}
 		});
 		panel.add(terminate, BorderLayout.SOUTH);
 		
-		JButton suspend = new JButton("suspend server");
-		suspend.addActionListener(new ActionListener() {
-			
-			public void actionPerformed(ActionEvent arg0) {
-				sl.suspend();
-			}
-		});
-		panel.add(suspend, BorderLayout.NORTH);
-		
-		JButton resume = new JButton("resume server");
-		resume.addActionListener(new ActionListener() {
-			
-			public void actionPerformed(ActionEvent arg0) {
-				sl.resume();
-			}
-		});
-		panel.add(resume, BorderLayout.CENTER);
-		
+		panel.add(new JLabel("Dernier message reçu :"), BorderLayout.NORTH);
+		panel.add(message, BorderLayout.CENTER);
+		panel.add(message2, BorderLayout.WEST);
 		
 		
 		
@@ -58,5 +47,11 @@ public class ControlPanel implements Runnable{
 	}
 	
 	
+	public void changeMessage(String newMessage) {
+		message.setText(newMessage);
+	}
+	public void changeMessage2(String newMessage) {
+		message2.setText(newMessage);
+	}
 	
 }
