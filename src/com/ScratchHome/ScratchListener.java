@@ -108,56 +108,28 @@ public class ScratchListener implements Runnable{
 			return;
 		}
 		header = header.substring(5, i - 1);
-		if (header.equals("favicon.ico")) return; // igore browser favicon.ico requests
-		else if (header.equals("crossdomain.xml")) sendPolicyFile();
+		if (header.equals("favicon.ico")) return;
 		else if (header.equals("poll")) return;
 		else if (header.equals("reset_all")) return;
 		else doCommand(header);
 	}
-
-	private void sendPolicyFile() {
-		// Send a Flash null-teriminated cross-domain policy file.
-		String policyFile =
-				"<cross-domain-policy>\n" +
-						"  <allow-access-from domain=\"*\" to-ports=\"" + PORT + "\"/>\n" +
-						"</cross-domain-policy>\n\0";
-		sendResponse(policyFile);
-	}
-
-	private void sendResponse(String s) {
-		String crlf = "\r\n";
-		String httpResponse = "HTTP/1.1 200 OK" + crlf;
-		httpResponse += "Content-Type: text/html; charset=ISO-8859-1" + crlf;
-		httpResponse += "Access-Control-Allow-Origin: *" + crlf;
-		httpResponse += crlf;
-		httpResponse += s + crlf;
-		try {
-			byte[] outBuf = httpResponse.getBytes();
-			sockOut.write(outBuf, 0, outBuf.length);
-		} catch (Exception ignored) { }
-	}
-
+	
 	private void doCommand(String cmdAndArgs) {
 		String[] cmd = cmdAndArgs.split("/"); 
 
+		cmd[1] = cmd[1].replaceAll("%20", "");
 		cmd[1] = cmd[1].replaceAll("[\\D]", "");
 		
 		cp.changeMessage(cmd[0]+" "+cmd[1]+" "+cmd[2]);
 		
-		int color = 0;
 		
-		switch (cmd[2].toLowerCase()) {
-		case "noir":
+		int color = 0;
+		cmd[2] = cmd[2].toLowerCase();
+		if (cmd[2].equals("noir")) {
 			color = -15000000;
-			break;
-
-		case "jaune":
+		}
+		if (cmd[2].equals("jaune")) {
 			color = -256;
-			break;
-
-		default:
-			color = 0;
-			break;
 		}
 
 		HomeModifier.changeColor(Integer.valueOf(cmd[1]), color, this.home);

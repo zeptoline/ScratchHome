@@ -34,6 +34,10 @@ public class ScratchAction extends PluginAction {
 		sl.terminate();
 	}
 
+	public void reInstanciate() {
+		instanciate = true;
+	}
+	
 	public void reupListener() {
 		if (!sl.isRunning()) {
 			sl = new ScratchListener(home, cp);
