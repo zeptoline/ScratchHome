@@ -52,9 +52,9 @@ public class JSONAction extends PluginAction{
 
 		StringBuffer vocStringBuffer = new StringBuffer();
 		if (allObject==true){
-			vocStringBuffer.append("{  \"extensionName\": \"ScratchHome (Scratch with SweetHome3D)\",\n   \"extensionPort\": 2016,\n   \"blockSpecs\": [\n\n        [\" \", \"mettre %m.objectList en %m.colorList\", \"setColor\"],\n],\n   \"menus\": { \n       \"colorList\": [\"bleu\", \"blanc\", \"rouge\", \"jaune\", \"vert\", \"noir\"],\n       \"objectList\": [ ");
+			vocStringBuffer.append("{  \"extensionName\": \"ScratchHome (Scratch with SweetHome3D)\",\n   \"extensionPort\": 2016,\n   \"blockSpecs\": [\n\n        [\" \", \"mettre %m.objectList en %m.colorList\", \"setColor\"],\n],\n   \"menus\": { \n       \"colorList\": [\"Noir\", \"Bleu\", \"Cyan\", \"Gris\", \"Vert\", \"Magenta\", \"Rouge\", \"Blanc\", \"Jaune\"],\n       \"objectList\": [ ");
 		}else{
-			vocStringBuffer.append("{  \"extensionName\": \"ScratchHome (Scratch with SweetHome3D)\",\n   \"extensionPort\": 2016,\n   \"blockSpecs\": [\n\n        [\" \", \"mettre %m.objectList en %m.colorList\", \"setColor\"],\n],\n   \"menus\": { \n       \"colorList\": [\"jaune\", \"noir\"],\n       \"objectList\": [ ");
+			vocStringBuffer.append("{  \"extensionName\": \"ScratchHome (Scratch with SweetHome3D)\",\n   \"extensionPort\": 2016,\n   \"blockSpecs\": [\n\n        [\" \", \"mettre %m.objectList en %m.colorList\", \"setColor\"],\n],\n   \"menus\": { \n       \"colorList\": [\"Jaune\", \"Noir\"],\n       \"objectList\": [ ");
 		}
 
 		ArrayList<String> listElem = new ArrayList<String>();
