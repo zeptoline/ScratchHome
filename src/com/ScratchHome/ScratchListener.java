@@ -125,6 +125,27 @@ public class ScratchListener implements Runnable{
 		if (cmd[2].equals("noir")) {
 			color = -15000000;
 		}
+		if (cmd[2].equals("bleu")) {
+			color = -16776961;
+		}
+		if (cmd[2].equals("cyan")) {
+			color = -16711681;
+		}
+		if (cmd[2].equals("gris")) {
+			color = -7829368;
+		}
+		if (cmd[2].equals("vert")) {
+			color = -16711936;
+		}
+		if (cmd[2].equals("magenta")) {
+			color = -65281;
+		}
+		if (cmd[2].equals("rouge")) {
+			color = -65536;
+		}
+		if (cmd[2].equals("blanc")) {
+			color = -1;
+		}
 		if (cmd[2].equals("jaune")) {
 			color = -256;
 		}

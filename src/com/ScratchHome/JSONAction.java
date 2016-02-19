@@ -41,7 +41,7 @@ public class JSONAction extends PluginAction{
 		boolean allObject = false;
 		
 		Object[] options = { "Prendre tous les objets", "Ne prendre que les lampes" };
-		int reply = JOptionPane.showOptionDialog(null, "Selection des objets", "AllObject?",  JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
+		int reply = JOptionPane.showOptionDialog(null, "Choisissez les objets à exporter :", "Selection des objets",  JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
 		if (reply == JOptionPane.YES_OPTION)
 		{
 			allObject = true;
