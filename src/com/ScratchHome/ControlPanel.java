@@ -12,6 +12,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+
 public class ControlPanel implements Runnable{
 
 	private ScratchAction sa;
@@ -23,15 +24,15 @@ public class ControlPanel implements Runnable{
 	
 	public ControlPanel (ScratchAction sa) {
 		this.sa = sa;
-		message = new JLabel("Server launched");
+		message = new JLabel("Lancer le serveur");
 		status = new JLabel("EN COURS");
 		status.setForeground(Color.green);
-		terminate = new JButton("Terminate server");
-		reup = new JButton("Relaunch server");
+		terminate = new JButton("Arrêter le serveur");
+		reup = new JButton("Relancer le serveur");
 	}
 
 	public void run() {
-		final JFrame frame = new JFrame("control panel");
+		final JFrame frame = new JFrame("Panneau de contrôle du serveur");
 		JPanel panel = new JPanel(new BorderLayout());
 		
 		terminate.addActionListener(new ActionListener() {
@@ -46,7 +47,7 @@ public class ControlPanel implements Runnable{
 				sa.reupListener();
 			}
 		});
-		JButton close = new JButton("close");
+		JButton close = new JButton("Fermer");
 		close.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				sa.closeListener();
@@ -70,12 +71,13 @@ public class ControlPanel implements Runnable{
 		
 		
 		JPanel subpanelNor = new JPanel();
-		subpanelNor.add(new JLabel("Status du server :   "));
+		subpanelNor.add(new JLabel("Statut du serveur :   "));
 		subpanelNor.add(status);
 		panel.add(subpanelNor, BorderLayout.NORTH);
 		
 		
-		
+		frame.add(panel);
+      
         frame.setSize(450,200);
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         frame.addWindowListener(new WindowAdapter() {
@@ -86,8 +88,8 @@ public class ControlPanel implements Runnable{
 				frame.dispose();
             }
         }); 
-        frame.add(panel);
-        frame.setVisible(true);
+
+		frame.setVisible(true);
 	}
 	
 	
