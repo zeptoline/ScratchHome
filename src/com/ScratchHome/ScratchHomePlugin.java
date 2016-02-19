@@ -10,7 +10,7 @@ public class ScratchHomePlugin extends Plugin {
 	public PluginAction[] getActions() {
 		Home home = getHome();
 		
-		return new PluginAction [] {new ScratchAction(home), new ShowListe(home), new JSONAction(home)};
+		return new PluginAction [] {new ScratchAction(home), new JSONAction(home)};
 
 	}
 
