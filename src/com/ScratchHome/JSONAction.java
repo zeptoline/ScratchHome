@@ -12,13 +12,14 @@ import javax.swing.filechooser.FileFilter;
 
 import com.eteks.sweethome3d.model.Home;
 import com.eteks.sweethome3d.model.HomePieceOfFurniture;
+import com.eteks.sweethome3d.model.Light;
 import com.eteks.sweethome3d.plugin.PluginAction;
 
 public class JSONAction extends PluginAction{
 
 	private Home home;
 	JFileChooser chooser = new JFileChooser();
-	
+
 	public void execute() {
 		if(!(home.getFurniture().isEmpty())) {
 			createJSON(this.home);
@@ -26,7 +27,7 @@ public class JSONAction extends PluginAction{
 			JOptionPane.showMessageDialog(null,"La scène ne contient aucun meuble !");
 		}
 	}
-	
+
 	public JSONAction(Home home) {
 		this.home = home;
 		putPropertyValue(Property.NAME, "Créer un fichier SB2(JSON)");
@@ -34,59 +35,83 @@ public class JSONAction extends PluginAction{
 		// Enables the action by default
 		setEnabled(true);
 	} 
- 
-    public void createJSON(Home home) {
-        StringBuffer vocStringBuffer = new StringBuffer();
-        
-        vocStringBuffer.append("{  \"extensionName\": \"ScratchHome (Scratch with SweetHome3D)\",\n   \"extensionPort\": 2016,\n   \"blockSpecs\": [\n\n        [\" \", \"mettre %m.objectList en %m.colorList\", \"setColor\"],\n],\n   \"menus\": { \n       \"colorList\": [\"bleu\", \"blanc\", \"rouge\", \"jaune\", \"jaune_pale\", \"jaune_clair\"],\n       \"objectList\": [ ");
-        
-        ArrayList<String> listElem = new ArrayList<String>();
-        
-        for (HomePieceOfFurniture fourniture : home.getFurniture()) {
-            //vocStringBuffer.append(fourniture.getName()+"   "+fourniture.hashCode());
-            //vocStringBuffer.append("\n");
-            listElem.add(fourniture.getName()+"("+fourniture.hashCode()+")");
-        }
 
-        for( int i = 0; i < listElem.size(); i++){
-            if(i!=0){
-               vocStringBuffer.append(", \""+listElem.get(i)+"\"");
-            }else{
-               vocStringBuffer.append("\""+listElem.get(i)+"\""); 
-            }
-        }
-
-        vocStringBuffer.append("],\n},\n}");
-	
+	public void createJSON(Home home) {
+		// Demande si ajout de tout les objet
+		boolean allObject = false;
 		
-	    this.chooser.setFileFilter(new FileFilter()
-	    {
-	        @Override
-	        public boolean accept(File f)
-	        {
-	            return f.isDirectory() || f.getName().toLowerCase().endsWith(".sb2");
-	        }
-	        
-	        @Override
-	        public String getDescription() 
-	        {
-	            return "Fichiers d'extension Scratch (*.sb2)";
-	        }
-	    });
-	    
-	    int n = chooser.showSaveDialog(null);
-	            
-	    if (n==JFileChooser.APPROVE_OPTION) {
-	        String chemin = this.chooser.getSelectedFile().toString();
-	        if(chemin.substring(chemin.length()-4, chemin.length()).equals(".sb2")) {
-	        	this.writeFile(vocStringBuffer.toString(), chemin, false);
-	        } else {
-	        	this.writeFile(vocStringBuffer.toString(), chemin+".sb2", false);
-	        }
-	    } 
+		Object[] options = { "Prendre tous les objets", "Ne prendre que les lampes" };
+		int reply = JOptionPane.showOptionDialog(null, "Selection des objets", "AllObject?",  JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
+		if (reply == JOptionPane.YES_OPTION)
+		{
+			allObject = true;
+		}
+		if (reply == JOptionPane.CLOSED_OPTION){
+		return;
+		}
+
+		StringBuffer vocStringBuffer = new StringBuffer();
+		if (allObject==true){
+			vocStringBuffer.append("{  \"extensionName\": \"ScratchHome (Scratch with SweetHome3D)\",\n   \"extensionPort\": 2016,\n   \"blockSpecs\": [\n\n        [\" \", \"mettre %m.objectList en %m.colorList\", \"setColor\"],\n],\n   \"menus\": { \n       \"colorList\": [\"bleu\", \"blanc\", \"rouge\", \"jaune\", \"vert\", \"noir\"],\n       \"objectList\": [ ");
+		}else{
+			vocStringBuffer.append("{  \"extensionName\": \"ScratchHome (Scratch with SweetHome3D)\",\n   \"extensionPort\": 2016,\n   \"blockSpecs\": [\n\n        [\" \", \"mettre %m.objectList en %m.colorList\", \"setColor\"],\n],\n   \"menus\": { \n       \"colorList\": [\"jaune\", \"noir\"],\n       \"objectList\": [ ");
+		}
+
+		ArrayList<String> listElem = new ArrayList<String>();
+
+		for (HomePieceOfFurniture fourniture : home.getFurniture()) {
+			//vocStringBuffer.append(fourniture.getName()+"   "+fourniture.hashCode());
+			//vocStringBuffer.append("\n");
+			if(allObject==true){
+				listElem.add(fourniture.getName()+"("+fourniture.hashCode()+")");
+			}else{
+				if(fourniture instanceof Light){
+					listElem.add(fourniture.getName()+"("+fourniture.hashCode()+")");
+				}
+			}
+
+		}
+
+		for( int i = 0; i < listElem.size(); i++){
+			if(i!=0){
+				vocStringBuffer.append(", \""+listElem.get(i)+"\"");
+			}else{
+				vocStringBuffer.append("\""+listElem.get(i)+"\""); 
+			}
+		}
+
+		vocStringBuffer.append("],\n},\n}");
+
+
+		this.chooser.setFileFilter(new FileFilter()
+		{
+			@Override
+			public boolean accept(File f)
+			{
+				return f.isDirectory() || f.getName().toLowerCase().endsWith(".sb2");
+			}
+
+			@Override
+			public String getDescription() 
+			{
+				return "Fichiers d'extension Scratch (*.sb2)";
+			}
+		});
+
+		int n = chooser.showSaveDialog(null);
+
+		if (n==JFileChooser.APPROVE_OPTION) {
+			String chemin = this.chooser.getSelectedFile().toString();
+			if(chemin.substring(chemin.length()-4, chemin.length()).equals(".sb2")) {
+				this.writeFile(vocStringBuffer.toString(), chemin, false);
+			} else {
+				this.writeFile(vocStringBuffer.toString(), chemin+".sb2", false);
+			}
+		} 
 	}
-			
-	
+
+
+
 	/**
 	 * Method writing a text in a file (by overwriting it or concatenating it).
 	 *
@@ -103,17 +128,17 @@ public class JSONAction extends PluginAction{
 			dirPath = filename.substring(0, dirPathEnd);
 			createDir(dirPath); 
 		}
-		
+
 		try {
 			out = new PrintWriter(new FileOutputStream(new File(filename), append));
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-		
+
 		out.print(text);
 		out.close();
 	}
-	
+
 	/**
 	 * Method creating a directory.
 	 * 
