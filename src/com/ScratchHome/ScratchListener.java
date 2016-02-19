@@ -114,13 +114,13 @@ public class ScratchListener implements Runnable{
 	private static void sendPolicyFile() {
 		// Send a Flash null-teriminated cross-domain policy file.
 		String policyFile =
-			"<cross-domain-policy>\n" +
-			"  <allow-access-from domain=\"*\" to-ports=\"" + PORT + "\"/>\n" +
-			"</cross-domain-policy>\n\0";
+				"<cross-domain-policy>\n" +
+						"  <allow-access-from domain=\"*\" to-ports=\"" + PORT + "\"/>\n" +
+						"</cross-domain-policy>\n\0";
 		sendResponse(policyFile);
 	}
-	
-	
+
+
 	private static void sendResponse(String s) {
 		String crlf = "\r\n";
 		String httpResponse = "HTTP/1.1 200 OK" + crlf;
@@ -133,48 +133,66 @@ public class ScratchListener implements Runnable{
 			sockOut.write(outBuf, 0, outBuf.length);
 		} catch (Exception ignored) { }
 	}
-	
+
 	private void doCommand(String cmdAndArgs) {
 		String[] cmd = cmdAndArgs.split("/"); 
 
-		cmd[1] = cmd[1].replaceAll("%20", "");
-		cmd[1] = cmd[1].replaceAll("[\\D]", "");
-		
-		cp.changeMessage(cmd[0]+" "+cmd[1]+" "+cmd[2]);
-		
-		
-		int color = 0;
-		cmd[2] = cmd[2].toLowerCase();
-		if (cmd[2].equals("noir")) {
-			color = -15000000;
-		}
-		if (cmd[2].equals("bleu")) {
-			color = -16776961;
-		}
-		if (cmd[2].equals("cyan")) {
-			color = -16711681;
-		}
-		if (cmd[2].equals("gris")) {
-			color = -7829368;
-		}
-		if (cmd[2].equals("vert")) {
-			color = -16711936;
-		}
-		if (cmd[2].equals("magenta")) {
-			color = -65281;
-		}
-		if (cmd[2].equals("rouge")) {
-			color = -65536;
-		}
-		if (cmd[2].equals("blanc")) {
-			color = -1;
-		}
-		if (cmd[2].equals("jaune")) {
-			color = -256;
-		}
+		if(cmd[0].equals("setColor")) {
 
-		HomeModifier.changeColor(Integer.valueOf(cmd[1]), color, this.home);
+			cmd[1] = cmd[1].replaceAll("%20", "");
+			cmd[1] = cmd[1].replaceAll("[\\D]", "");
 
+			cp.changeMessage(cmd[0]+" "+cmd[1]+" "+cmd[2]);
+
+
+			int color = 0;
+			cmd[2] = cmd[2].toLowerCase();
+			if (cmd[2].equals("noir")) {
+				color = -15000000;
+			}
+			if (cmd[2].equals("bleu")) {
+				color = -16776961;
+			}
+			if (cmd[2].equals("cyan")) {
+				color = -16711681;
+			}
+			if (cmd[2].equals("gris")) {
+				color = -7829368;
+			}
+			if (cmd[2].equals("vert")) {
+				color = -16711936;
+			}
+			if (cmd[2].equals("magenta")) {
+				color = -65281;
+			}
+			if (cmd[2].equals("rouge")) {
+				color = -65536;
+			}
+			if (cmd[2].equals("blanc")) {
+				color = -1;
+			}
+			if (cmd[2].equals("jaune")) {
+				color = -256;
+			}
+
+			HomeModifier.changeColor(Integer.valueOf(cmd[1]), color, this.home);
+		}else if (cmd[0].equals("setColor")) {
+			cmd[1] = cmd[1].replaceAll("%20", "");
+			cmd[1] = cmd[1].replaceAll("[\\D]", "");
+
+			cp.changeMessage(cmd[0]+" "+cmd[1]+" "+cmd[2]);
+
+
+			int color = 0;
+			cmd[2] = cmd[2].toLowerCase();
+			if (cmd[2].equals("allumer")) {
+				color = -256;
+			}
+			if (cmd[2].equals("eteindre")) {
+				color = -15000000;
+			}
+			HomeModifier.changeColor(Integer.valueOf(cmd[1]), color, this.home);
+		}
 	}
 
 }

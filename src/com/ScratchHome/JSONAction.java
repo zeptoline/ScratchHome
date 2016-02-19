@@ -39,7 +39,7 @@ public class JSONAction extends PluginAction{
 	public void createJSON(Home home) {
 		// Demande si ajout de tout les objet
 		boolean allObject = false;
-		
+
 		Object[] options = { "Prendre tous les objets", "Ne prendre que les lampes" };
 		int reply = JOptionPane.showOptionDialog(null, "Choisissez les objets à exporter :", "Selection des objets",  JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
 		if (reply == JOptionPane.YES_OPTION)
@@ -47,40 +47,72 @@ public class JSONAction extends PluginAction{
 			allObject = true;
 		}
 		if (reply == JOptionPane.CLOSED_OPTION){
-		return;
+			return;
 		}
+
+
+		/*
+		 * 
+		 * FAIRE LES DEUX CHOIX : AVEC MENU DEROULANT ET AVEC UN BLOC PAR OBJET
+		 * 
+		 */
+		boolean menuDeroulant = false;
+		Object[] options2 = { "Créer un bloc avec menu déroulant", "Créer un bloc pour chaque objet" };
+		int reply2 = JOptionPane.showOptionDialog(null, "Choisissez le type de bloc sur Scratch :", "Type de bloc",  JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options2, options2[0]);
+		if (reply2 == JOptionPane.YES_OPTION)
+		{
+			menuDeroulant = true;
+		}
+		if (reply2 == JOptionPane.CLOSED_OPTION){
+			return;
+		}
+
+
+		//////////////////////////////////////////
 
 		StringBuffer vocStringBuffer = new StringBuffer();
-		if (allObject==true){
-			vocStringBuffer.append("{  \"extensionName\": \"ScratchHome\",\n   \"extensionPort\": 2016,\n   \"blockSpecs\": [\n\n        [\" \", \"mettre %m.objectList en %m.colorList\", \"setColor\"],\n],\n   \"menus\": { \n       \"colorList\": [\"Noir\", \"Bleu\", \"Cyan\", \"Gris\", \"Vert\", \"Magenta\", \"Rouge\", \"Blanc\", \"Jaune\"],\n       \"objectList\": [ ");
-		}else{
-			vocStringBuffer.append("{  \"extensionName\": \"ScratchHome\",\n   \"extensionPort\": 2016,\n   \"blockSpecs\": [\n\n        [\" \", \"mettre %m.objectList en %m.colorList\", \"setColor\"],\n],\n   \"menus\": { \n       \"colorList\": [\"Jaune\", \"Noir\"],\n       \"objectList\": [ ");
-		}
-
-		ArrayList<String> listElem = new ArrayList<String>();
-
-		for (HomePieceOfFurniture fourniture : home.getFurniture()) {
-			//vocStringBuffer.append(fourniture.getName()+"   "+fourniture.hashCode());
-			//vocStringBuffer.append("\n");
-			if(allObject==true){
-				listElem.add(fourniture.getName()+"("+fourniture.hashCode()+")");
+		if(menuDeroulant){
+			if (allObject==true){
+				vocStringBuffer.append("{  \"extensionName\": \"ScratchHome\",\n   \"extensionPort\": 2016,\n   \"blockSpecs\": [\n\n        [\" \", \"mettre %m.objectList en %m.colorList\", \"setColor\"],\n],\n   \"menus\": { \n       \"colorList\": [\"Noir\", \"Bleu\", \"Cyan\", \"Gris\", \"Vert\", \"Magenta\", \"Rouge\", \"Blanc\", \"Jaune\"],\n       \"objectList\": [ ");
 			}else{
-				if(fourniture instanceof Light){
+				vocStringBuffer.append("{  \"extensionName\": \"ScratchHome\",\n   \"extensionPort\": 2016,\n   \"blockSpecs\": [\n\n        [\" \", \"%m.colorList %m.objectList\", \"switchOnOff\"],\n],\n   \"menus\": { \n       \"colorList\": [\"Allumer\", \"Eteindre\"],\n       \"objectList\": [ ");
+			}
+
+			ArrayList<String> listElem = new ArrayList<String>();
+
+			for (HomePieceOfFurniture fourniture : home.getFurniture()) {
+				//vocStringBuffer.append(fourniture.getName()+"   "+fourniture.hashCode());
+				//vocStringBuffer.append("\n");
+				if(allObject==true){
 					listElem.add(fourniture.getName()+"("+fourniture.hashCode()+")");
+				}else{
+					if(fourniture instanceof Light){
+						listElem.add(fourniture.getName()+"("+fourniture.hashCode()+")");
+					}
+				}
+
+			}
+
+			for( int i = 0; i < listElem.size(); i++){
+				if(i!=0){
+					vocStringBuffer.append(", \""+listElem.get(i)+"\"");
+				}else{
+					vocStringBuffer.append("\""+listElem.get(i)+"\""); 
 				}
 			}
 
-		}
+			vocStringBuffer.append("],\n},\n}");
 
-		for( int i = 0; i < listElem.size(); i++){
-			if(i!=0){
-				vocStringBuffer.append(", \""+listElem.get(i)+"\"");
-			}else{
-				vocStringBuffer.append("\""+listElem.get(i)+"\""); 
-			}
+		} 
+		else {
+			/*
+			 * 
+			 * A FAIRE
+			 * 
+			 * 
+			 */
 		}
-
-		vocStringBuffer.append("],\n},\n}");
+		//////////////////////////////////////////
 
 
 		this.chooser.setFileFilter(new FileFilter()
