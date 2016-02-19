@@ -27,7 +27,7 @@ public class ScratchAction extends PluginAction {
 			
 			instanciate = false;
 		}
-		putPropertyValue(Property.NAME, "Listening Scratch");
+		setEnabled(false);
 
 	}
 	public void closeListener() {
@@ -36,6 +36,7 @@ public class ScratchAction extends PluginAction {
 
 	public void reInstanciate() {
 		instanciate = true;
+		setEnabled(true);
 	}
 	
 	public void reupListener() {
@@ -48,7 +49,7 @@ public class ScratchAction extends PluginAction {
 	
 	public ScratchAction(Home home) {
 		this.home = home;
-		putPropertyValue(Property.NAME, "Start listening Scratch");
+		putPropertyValue(Property.NAME, "Lancer le serveur d'écoute");
 		putPropertyValue(Property.MENU, "ScratchHome");
 
 

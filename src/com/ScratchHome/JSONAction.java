@@ -30,7 +30,7 @@ public class JSONAction extends PluginAction{
 
 	public JSONAction(Home home) {
 		this.home = home;
-		putPropertyValue(Property.NAME, "Create SB2(JSON) file");
+		putPropertyValue(Property.NAME, "Créer un fichier SB2(JSON)");
 		putPropertyValue(Property.MENU, "ScratchHome");
 		// Enables the action by default
 		setEnabled(true);

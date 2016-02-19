@@ -44,15 +44,13 @@ public class ScratchListener implements Runnable{
 		try {
 			serverSock.close();
 		} catch (IOException e) {}
-		System.out.println("tryin' to crash it");
-		cp.changeMessage("Tryin' to crash it");
 		cp.changeStatus(false);
 	}
 
 	public void run() {
 		cp.changeStatus(true);
 		try {
-			System.out.println("Server launched");
+			cp.changeMessage("Serveur lancé avec succès");
 			serverSock = new ServerSocket(PORT);
 			running = true;
 			while (running) {
@@ -73,8 +71,7 @@ public class ScratchListener implements Runnable{
 				if (!running)
 					break;
 			}
-			System.out.println("The server has been shut down");
-			cp.changeMessage("Crashing server was successful !");
+			cp.changeMessage("Serveur terminé avec succès");
 
 		} catch (IOException e) {
 			e.printStackTrace();
