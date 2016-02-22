@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -18,6 +19,7 @@ import com.eteks.sweethome3d.plugin.PluginAction;
 public class JSONAction extends PluginAction{
 
 	private Home home;
+	private HashMap<String, String> language;
 	JFileChooser chooser = new JFileChooser();
 
 	public void execute() {
@@ -28,8 +30,9 @@ public class JSONAction extends PluginAction{
 		}
 	}
 
-	public JSONAction(Home home) {
+	public JSONAction(Home home, HashMap<String, String> language) {
 		this.home = home;
+		this.language = language;
 		putPropertyValue(Property.NAME, "Créer un fichier SB2(JSON)");
 		putPropertyValue(Property.MENU, "ScratchHome");
 		// Enables the action by default

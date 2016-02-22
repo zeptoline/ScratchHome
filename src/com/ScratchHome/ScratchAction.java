@@ -2,6 +2,8 @@ package src.com.ScratchHome;
 
 
 
+import java.util.HashMap;
+
 import com.eteks.sweethome3d.model.Home;
 import com.eteks.sweethome3d.plugin.PluginAction;
 
@@ -9,7 +11,9 @@ import com.eteks.sweethome3d.plugin.PluginAction;
 public class ScratchAction extends PluginAction {
 
 	private boolean instanciate = true;
-
+	
+	private HashMap<String, String> language;
+	
 	private Home home;
 	private Thread thread = null;
 	private Thread control = null;
@@ -47,11 +51,11 @@ public class ScratchAction extends PluginAction {
 		}
 	}
 	
-	public ScratchAction(Home home) {
+	public ScratchAction(Home home, HashMap<String, String> language) {
 		this.home = home;
+		this.language = language;
 		putPropertyValue(Property.NAME, "Lancer le serveur d'écoute");
 		putPropertyValue(Property.MENU, "ScratchHome");
-
 
 		setEnabled(true);
 	}

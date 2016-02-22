@@ -176,22 +176,22 @@ public class ScratchListener implements Runnable{
 			}
 
 			HomeModifier.changeColor(Integer.valueOf(cmd[1]), color, this.home);
-		}else if (cmd[0].equals("setColor")) {
-			cmd[1] = cmd[1].replaceAll("%20", "");
-			cmd[1] = cmd[1].replaceAll("[\\D]", "");
+		}else if (cmd[0].equals("switchOnOff")) {
+			cmd[2] = cmd[2].replaceAll("%20", "");
+			cmd[2] = cmd[2].replaceAll("[\\D]", "");
 
 			cp.changeMessage(cmd[0]+" "+cmd[1]+" "+cmd[2]);
 
 
 			int color = 0;
-			cmd[2] = cmd[2].toLowerCase();
-			if (cmd[2].equals("allumer")) {
+			cmd[1] = cmd[1].toLowerCase();
+			if (cmd[1].equals("allumer")) {
 				color = -256;
 			}
-			if (cmd[2].equals("eteindre")) {
+			if (cmd[1].equals("eteindre")) {
 				color = -15000000;
 			}
-			HomeModifier.changeColor(Integer.valueOf(cmd[1]), color, this.home);
+			HomeModifier.changeColor(Integer.valueOf(cmd[2]), color, this.home);
 		}
 	}
 
