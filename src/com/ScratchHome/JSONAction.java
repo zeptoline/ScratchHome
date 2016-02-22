@@ -70,27 +70,28 @@ public class JSONAction extends PluginAction{
 
 		//////////////////////////////////////////
 
+		ArrayList<String> listElem = new ArrayList<String>();
+
+		for (HomePieceOfFurniture fourniture : home.getFurniture()) {
+			//vocStringBuffer.append(fourniture.getName()+"   "+fourniture.hashCode());
+			//vocStringBuffer.append("\n");
+			if(allObject==true){
+				listElem.add(fourniture.getName()+"("+fourniture.hashCode()+")");
+			}else{
+				if(fourniture instanceof Light){
+					listElem.add(fourniture.getName()+"("+fourniture.hashCode()+")");
+				}
+			}
+
+		}
+				
 		StringBuffer vocStringBuffer = new StringBuffer();
 		if(menuDeroulant){
+			// Construction d'un bloc avec un menu déroulant
 			if (allObject==true){
 				vocStringBuffer.append("{  \"extensionName\": \"ScratchHome\",\n   \"extensionPort\": 2016,\n   \"blockSpecs\": [\n\n        [\" \", \"mettre %m.objectList en %m.colorList\", \"setColor\"],\n],\n   \"menus\": { \n       \"colorList\": [\"Noir\", \"Bleu\", \"Cyan\", \"Gris\", \"Vert\", \"Magenta\", \"Rouge\", \"Blanc\", \"Jaune\"],\n       \"objectList\": [ ");
 			}else{
 				vocStringBuffer.append("{  \"extensionName\": \"ScratchHome\",\n   \"extensionPort\": 2016,\n   \"blockSpecs\": [\n\n        [\" \", \"%m.colorList %m.objectList\", \"switchOnOff\"],\n],\n   \"menus\": { \n       \"colorList\": [\"Allumer\", \"Eteindre\"],\n       \"objectList\": [ ");
-			}
-
-			ArrayList<String> listElem = new ArrayList<String>();
-
-			for (HomePieceOfFurniture fourniture : home.getFurniture()) {
-				//vocStringBuffer.append(fourniture.getName()+"   "+fourniture.hashCode());
-				//vocStringBuffer.append("\n");
-				if(allObject==true){
-					listElem.add(fourniture.getName()+"("+fourniture.hashCode()+")");
-				}else{
-					if(fourniture instanceof Light){
-						listElem.add(fourniture.getName()+"("+fourniture.hashCode()+")");
-					}
-				}
-
 			}
 
 			for( int i = 0; i < listElem.size(); i++){
@@ -105,12 +106,19 @@ public class JSONAction extends PluginAction{
 
 		} 
 		else {
-			/*
-			 * 
-			 * A FAIRE
-			 * 
-			 * 
-			 */
+			// construction d'un bloc par element
+			vocStringBuffer.append("{  \"extensionName\": \"ScratchHome\",\n   \"extensionPort\": 2016,\n   \"blockSpecs\": [\n\n");
+			
+			for( int i = 0; i < listElem.size(); i++){
+				vocStringBuffer.append("        [\" \", \"mettre " + listElem.get(i) + " en %m.colorList\", \"setColor\"],\n]");
+			}
+			
+			if (allObject==true){
+				vocStringBuffer.append(",\n   \"menus\": { \n       \"colorList\": [\"Noir\", \"Bleu\", \"Cyan\", \"Gris\", \"Vert\", \"Magenta\", \"Rouge\", \"Blanc\", \"Jaune\"],\n   },\n}");
+			}else{
+				vocStringBuffer.append(",\n   \"menus\": { \n       \"colorList\": [\"Allumer\", \"Eteindre\"],\n   },\n}");
+			}
+			
 		}
 		//////////////////////////////////////////
 
