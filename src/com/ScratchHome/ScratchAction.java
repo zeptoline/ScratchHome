@@ -22,8 +22,8 @@ public class ScratchAction extends PluginAction {
 
 	public void execute() {
 		if(instanciate) {
-			cp = new ControlPanel(this);
-			sl = new ScratchListener(home, cp);
+			cp = new ControlPanel(this, language);
+			sl = new ScratchListener(home, cp, language);
 			thread = new Thread(sl);
 			thread.start();
 			control = new Thread(cp);
@@ -45,7 +45,7 @@ public class ScratchAction extends PluginAction {
 	
 	public void reupListener() {
 		if (!sl.isRunning()) {
-			sl = new ScratchListener(home, cp);
+			sl = new ScratchListener(home, cp, language);
 			thread = new Thread(sl);
 			thread.start();
 		}
@@ -54,8 +54,8 @@ public class ScratchAction extends PluginAction {
 	public ScratchAction(Home home, HashMap<String, String> language) {
 		this.home = home;
 		this.language = language;
-		putPropertyValue(Property.NAME, "Lancer le serveur d'écoute");
-		putPropertyValue(Property.MENU, "ScratchHome");
+		putPropertyValue(Property.NAME, language.get("ScratchActionMenu"));
+		putPropertyValue(Property.MENU, language.get("ScratchHome"));
 
 		setEnabled(true);
 	}

@@ -7,6 +7,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.Arrays;
+import java.util.HashMap;
 
 import com.eteks.sweethome3d.model.Home;
 
@@ -25,13 +26,14 @@ public class ScratchListener implements Runnable{
 
 	private Home home;
 	private ControlPanel cp;
+	private HashMap<String, String> language;
 
 
 
-
-	public ScratchListener (Home home, ControlPanel cp) {
+	public ScratchListener (Home home, ControlPanel cp, HashMap<String, String> language) {
 		this.home = home;
 		this.cp = cp;
+		this.language = language;
 	}
 
 	public boolean isRunning() {
@@ -50,7 +52,7 @@ public class ScratchListener implements Runnable{
 	public void run() {
 		cp.changeStatus(true);
 		try {
-			cp.changeMessage("Serveur lancé avec succès");
+			cp.changeMessage(language.get("ServerLaunched"));
 			serverSock = new ServerSocket(PORT);
 			running = true;
 			while (running) {
@@ -71,7 +73,7 @@ public class ScratchListener implements Runnable{
 				if (!running)
 					break;
 			}
-			cp.changeMessage("Serveur terminé avec succès");
+			cp.changeMessage(language.get("ServerTerminated"));
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -88,7 +90,7 @@ public class ScratchListener implements Runnable{
 			byte[] buf = new byte[5000];
 			int bytes_read = sockIn.read(buf, 0, buf.length);
 			if (bytes_read < 0) {
-				System.out.println("Socket closed; no HTTP header.");
+				System.err.println("Socket closed; no HTTP header.");
 				return;
 			}
 			httpBuf += new String(Arrays.copyOf(buf, bytes_read));
@@ -96,12 +98,12 @@ public class ScratchListener implements Runnable{
 
 		String header = httpBuf.substring(0, i);
 		if (header.indexOf("GET ") != 0) {
-			System.out.println("This server only handles HTTP GET requests.");
+			System.err.println("This server only handles HTTP GET requests.");
 			return;
 		}
 		i = header.indexOf("HTTP/1");
 		if (i < 0) {
-			System.out.println("Bad HTTP GET header.");
+			System.err.println("Bad HTTP GET header.");
 			return;
 		}
 		header = header.substring(5, i - 1);
@@ -147,31 +149,31 @@ public class ScratchListener implements Runnable{
 
 			int color = 0;
 			cmd[2] = cmd[2].toLowerCase();
-			if (cmd[2].equals("noir")) {
+			if (cmd[2].equals(language.get("black"))) {
 				color = -15000000;
 			}
-			if (cmd[2].equals("bleu")) {
+			if (cmd[2].equals(language.get("blue"))) {
 				color = -16776961;
 			}
-			if (cmd[2].equals("cyan")) {
+			if (cmd[2].equals(language.get("cyan"))) {
 				color = -16711681;
 			}
-			if (cmd[2].equals("gris")) {
+			if (cmd[2].equals(language.get("grey"))) {
 				color = -7829368;
 			}
-			if (cmd[2].equals("vert")) {
+			if (cmd[2].equals(language.get("green"))) {
 				color = -16711936;
 			}
-			if (cmd[2].equals("magenta")) {
+			if (cmd[2].equals(language.get("magenta"))) {
 				color = -65281;
 			}
-			if (cmd[2].equals("rouge")) {
+			if (cmd[2].equals(language.get("red"))) {
 				color = -65536;
 			}
-			if (cmd[2].equals("blanc")) {
+			if (cmd[2].equals(language.get("white"))) {
 				color = -1;
 			}
-			if (cmd[2].equals("jaune")) {
+			if (cmd[2].equals(language.get("yellow"))) {
 				color = -256;
 			}
 
@@ -185,10 +187,10 @@ public class ScratchListener implements Runnable{
 
 			int color = 0;
 			cmd[1] = cmd[1].toLowerCase();
-			if (cmd[1].equals("allumer")) {
+			if (cmd[1].equals(language.get("On"))) {
 				color = -256;
 			}
-			if (cmd[1].equals("eteindre")) {
+			if (cmd[1].equals(language.get("Off"))) {
 				color = -15000000;
 			}
 			HomeModifier.changeColor(Integer.valueOf(cmd[2]), color, this.home);

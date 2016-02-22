@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.HashMap;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -21,18 +22,21 @@ public class ControlPanel implements Runnable{
 	private JButton terminate;
 	private JButton reup;
 	
+	private HashMap<String, String> language;
 	
-	public ControlPanel (ScratchAction sa) {
+	
+	public ControlPanel (ScratchAction sa, HashMap<String, String> language) {
+		this.language=language;
 		this.sa = sa;
-		message = new JLabel("Lancer le serveur");
-		status = new JLabel("EN COURS");
+		message = new JLabel(language.get("ServerLaunch"));
+		status = new JLabel(language.get("StatusOn"));
 		status.setForeground(Color.green);
-		terminate = new JButton("Arrêter le serveur");
-		reup = new JButton("Relancer le serveur");
+		terminate = new JButton(language.get("ServerTerminate"));
+		reup = new JButton(language.get("ServerRelaunch"));
 	}
 
 	public void run() {
-		final JFrame frame = new JFrame("Panneau de contrôle du serveur");
+		final JFrame frame = new JFrame(language.get("ControlPanel"));
 		JPanel panel = new JPanel(new BorderLayout());
 		
 		terminate.addActionListener(new ActionListener() {
@@ -47,7 +51,7 @@ public class ControlPanel implements Runnable{
 				sa.reupListener();
 			}
 		});
-		JButton close = new JButton("Fermer");
+		JButton close = new JButton(language.get("Close"));
 		close.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				sa.closeListener();
@@ -65,13 +69,13 @@ public class ControlPanel implements Runnable{
 		panel.add(subpanelSou, BorderLayout.SOUTH);
 		
 		JPanel subpanelCen = new JPanel();
-		subpanelCen.add(new JLabel("Dernier message reçu :   \n"));
+		subpanelCen.add(new JLabel(language.get("LastMessage")));
 		subpanelCen.add(message);
 		panel.add(subpanelCen, BorderLayout.CENTER);
 		
 		
 		JPanel subpanelNor = new JPanel();
-		subpanelNor.add(new JLabel("Statut du serveur :   "));
+		subpanelNor.add(new JLabel(language.get("ServerStatus")));
 		subpanelNor.add(status);
 		panel.add(subpanelNor, BorderLayout.NORTH);
 		
@@ -98,12 +102,12 @@ public class ControlPanel implements Runnable{
 	}
 	public void changeStatus(boolean enCours) {
 		if(enCours) {
-			status.setText("EN COURS");
+			status.setText(language.get("StatusOn"));
 			status.setForeground(Color.green);
 			reup.setVisible(false);
 			terminate.setVisible(true);
 		} else {
-			status.setText("OFF");
+			status.setText(language.get("StatusOff"));
 			status.setForeground(Color.red);
 			reup.setVisible(true);
 			terminate.setVisible(false);
