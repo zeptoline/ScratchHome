@@ -35,10 +35,10 @@ public class ScratchHomePlugin extends Plugin {
 			input_lang = new FileInputStream("language"+lang+".properties");
 			prop2.load(input_lang);
 			
-			Enumeration<?> e = prop.propertyNames();
+			Enumeration<?> e = prop2.propertyNames();
 			while (e.hasMoreElements()) {
 				String key = (String) e.nextElement();
-				String value = prop.getProperty(key);
+				String value = prop2.getProperty(key);
 				language.put(key, value);
 			}
 			
