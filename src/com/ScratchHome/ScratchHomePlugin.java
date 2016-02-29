@@ -1,48 +1,66 @@
 package src.com.ScratchHome;
 
+import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Properties;
 
+import com.eteks.sweethome3d.io.FileUserPreferences;
 import com.eteks.sweethome3d.model.Home;
+import com.eteks.sweethome3d.model.UserPreferences;
 import com.eteks.sweethome3d.plugin.Plugin;
 import com.eteks.sweethome3d.plugin.PluginAction;
 
 
 public class ScratchHomePlugin extends Plugin {
+	private static final String     APPLICATION_PLUGINS_SUB_FOLDER = "plugins";
+
 
 	public PluginAction[] getActions() {
-		
 
 		Properties prop = new Properties();
 		Properties prop2 = new Properties();
 		InputStream input = null;
-		InputStream input_lang = null;
+		BufferedReader input_lang = null;
 		HashMap<String, String> language = new HashMap<String, String>(); 
 
 		String lang = "_en";
-		
+
+
+
+
 		try {
+			UserPreferences userPreferences = getUserPreferences();
+			if (userPreferences instanceof FileUserPreferences) {
+				File [] applicationPluginsFolders = ((FileUserPreferences) userPreferences)
+						.getApplicationSubfolders(APPLICATION_PLUGINS_SUB_FOLDER);
 
-			input = new FileInputStream("language.properties");
-			// load a properties file
-			prop.load(input);
-			lang = prop.getProperty("language");
 
-			input_lang = new FileInputStream("language"+lang+".properties");
-			prop2.load(input_lang);
-			
-			Enumeration<?> e = prop2.propertyNames();
-			while (e.hasMoreElements()) {
-				String key = (String) e.nextElement();
-				String value = prop2.getProperty(key);
-				language.put(key, value);
+				input = new FileInputStream(applicationPluginsFolders[0].getPath()+"/language.properties");
+
+				// load a properties file
+				prop.load(input);
+				lang = prop.getProperty("language");
+
+				//input_lang = new FileInputStream();
+				input_lang = new BufferedReader(
+						   new InputStreamReader(
+				                      new FileInputStream(applicationPluginsFolders[0].getPath()+"/language"+lang+".properties"), "UTF8"));
+				prop2.load(input_lang);
+
+				Enumeration<?> e = prop2.propertyNames();
+				while (e.hasMoreElements()) {
+					String key = (String) e.nextElement();
+					String value = prop2.getProperty(key);
+					language.put(key, value);
+				}
+
 			}
-			
-
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		} finally {
@@ -61,10 +79,10 @@ public class ScratchHomePlugin extends Plugin {
 				}
 			}
 		}
-		
-		
+
+
 		Home home = getHome();
-		
+
 		return new PluginAction [] {new ScratchAction(home, language), new JSONAction(home, language)};
 
 	}

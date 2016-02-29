@@ -19,6 +19,7 @@ import com.eteks.sweethome3d.plugin.PluginAction;
 public class JSONAction extends PluginAction{
 
 	private Home home;
+	@SuppressWarnings("unused")
 	private HashMap<String, String> language;
 	JFileChooser chooser = new JFileChooser();
 
