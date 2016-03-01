@@ -19,7 +19,6 @@ import com.eteks.sweethome3d.plugin.PluginAction;
 public class JSONAction extends PluginAction{
 
 	private Home home;
-	@SuppressWarnings("unused")
 	private HashMap<String, String> language;
 	JFileChooser chooser = new JFileChooser();
 
@@ -27,25 +26,26 @@ public class JSONAction extends PluginAction{
 		if(!(home.getFurniture().isEmpty())) {
 			createJSON(this.home);
 		} else {
-			JOptionPane.showMessageDialog(null,"La scène ne contient aucun meuble !");
+			JOptionPane.showMessageDialog(null,language.get("NoObject"));
 		}
 	}
 
 	public JSONAction(Home home, HashMap<String, String> language) {
 		this.home = home;
 		this.language = language;
-		putPropertyValue(Property.NAME, "Créer un fichier SB2(JSON)");
-		putPropertyValue(Property.MENU, "ScratchHome");
+		putPropertyValue(Property.NAME, language.get("ExportMenu"));
+		putPropertyValue(Property.MENU, language.get("ScratchHome"));
 		// Enables the action by default
 		setEnabled(true);
 	} 
 
 	public void createJSON(Home home) {
-		// Demande si ajout de tout les objet
+		
+		// Demande si ajout de tous les objets ou simplement les lampes
 		boolean allObject = false;
 
-		Object[] options = { "Prendre tous les objets", "Ne prendre que les lampes" };
-		int reply = JOptionPane.showOptionDialog(null, "Choisissez les objets à exporter :", "Selection des objets",  JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
+		Object[] options = { language.get("AllObjects"), language.get("OnlyLights") };
+		int reply = JOptionPane.showOptionDialog(null, language.get("ChoiceOfExport"), language.get("ObjectSelection"),  JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
 		if (reply == JOptionPane.YES_OPTION)
 		{
 			allObject = true;
@@ -54,15 +54,11 @@ public class JSONAction extends PluginAction{
 			return;
 		}
 
-
-		/*
-		 * 
-		 * FAIRE LES DEUX CHOIX : AVEC MENU DEROULANT ET AVEC UN BLOC PAR OBJET
-		 * 
-		 */
+		// Demande si un bloc avec menu déroulant ou un bloc par objet
 		boolean menuDeroulant = false;
-		Object[] options2 = { "Créer un bloc avec menu déroulant", "Créer un bloc pour chaque objet" };
-		int reply2 = JOptionPane.showOptionDialog(null, "Choisissez le type de bloc sur Scratch :", "Type de bloc",  JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options2, options2[0]);
+		
+		Object[] options2 = { language.get("PulldownMenuBlock"), language.get("SingleBlock")};
+		int reply2 = JOptionPane.showOptionDialog(null, language.get("TypeOfBlockChoice"), language.get("TypeOfBlock"),  JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options2, options2[0]);
 		if (reply2 == JOptionPane.YES_OPTION)
 		{
 			menuDeroulant = true;
@@ -72,13 +68,9 @@ public class JSONAction extends PluginAction{
 		}
 
 
-		//////////////////////////////////////////
-
 		ArrayList<String> listElem = new ArrayList<String>();
 
 		for (HomePieceOfFurniture fourniture : home.getFurniture()) {
-			//vocStringBuffer.append(fourniture.getName()+"   "+fourniture.hashCode());
-			//vocStringBuffer.append("\n");
 			if(allObject==true){
 				listElem.add(fourniture.getName()+"("+fourniture.hashCode()+")");
 			}else{
@@ -93,9 +85,25 @@ public class JSONAction extends PluginAction{
 		if(menuDeroulant){
 			// Construction d'un bloc avec un menu déroulant
 			if (allObject==true){
-				vocStringBuffer.append("{  \"extensionName\": \"ScratchHome\",\n   \"extensionPort\": 2016,\n   \"blockSpecs\": [\n\n        [\" \", \"mettre %m.objectList en %m.colorList\", \"setColor\"],\n],\n   \"menus\": { \n       \"colorList\": [\"Noir\", \"Bleu\", \"Cyan\", \"Gris\", \"Vert\", \"Magenta\", \"Rouge\", \"Blanc\", \"Jaune\"],\n       \"objectList\": [ ");
+				vocStringBuffer.append(
+						"{  \"extensionName\": \"ScratchHome\",\n"
+						+ "   \"extensionPort\": 2016,\n"
+						+ "   \"blockSpecs\": [\n\n  "
+							+ "      [\" \", \""+language.get("ScratchMessageObjects")+"\", \"setColor\"],\n"
+						+ "],\n"
+							+ "   \"menus\": { \n       "
+								+ "\"colorList\": [\""+language.get("black")+"\", \""+language.get("blue")+"\", \""+language.get("cyan")+"\", \""+language.get("grey")+"\", \""+language.get("green")+"\", \""+language.get("magenta")+"\", \""+language.get("red")+"\", \""+language.get("white")+"\", \""+language.get("yellow")+"\"],\n       "
+								+ "\"objectList\": [ ");
 			}else{
-				vocStringBuffer.append("{  \"extensionName\": \"ScratchHome\",\n   \"extensionPort\": 2016,\n   \"blockSpecs\": [\n\n        [\" \", \"%m.colorList %m.objectList\", \"switchOnOff\"],\n],\n   \"menus\": { \n       \"colorList\": [\"Allumer\", \"Eteindre\"],\n       \"objectList\": [ ");
+				vocStringBuffer.append(
+						"{  \"extensionName\": \"ScratchHome\",\n"
+						+ "   \"extensionPort\": 2016,\n"
+						+ "   \"blockSpecs\": [\n\n"
+							+ "        [\" \", \""+language.get("ScratchMessageLights")+"\", \"switchOnOff\"],\n"
+						+ "],\n"
+							+ "   \"menus\": { \n       "
+								+ "\"colorList\": [\""+language.get("SwitchOn")+"\", \""+language.get("SwitchOff")+"\"],\n       "
+								+ "\"objectList\": [ ");
 			}
 
 			for( int i = 0; i < listElem.size(); i++){
@@ -111,20 +119,26 @@ public class JSONAction extends PluginAction{
 		} 
 		else {
 			// construction d'un bloc par element
-			vocStringBuffer.append("{  \"extensionName\": \"ScratchHome\",\n   \"extensionPort\": 2016,\n   \"blockSpecs\": [\n\n");
+			vocStringBuffer.append(
+					"{  \"extensionName\": \"ScratchHome\",\n"
+					+ "   \"extensionPort\": 2016,\n"
+					+ "   \"blockSpecs\": [\n\n");
 			
-			for( int i = 0; i < listElem.size(); i++){
-				vocStringBuffer.append("        [\" \", \"mettre " + listElem.get(i) + " en %m.colorList\", \"setColor\"],\n]");
+			for( int i = 0; i < ((listElem.size())-1); i++){
+				vocStringBuffer.append(String.format("        [\" \", \""+language.get("ScratchMessageObjectsEachBlock")+"\", \"setColor\"],\n", listElem.get(i)));
 			}
+			vocStringBuffer.append(String.format("        [\" \", \""+language.get("ScratchMessageObjectsEachBlock")+"\", \"setColor\"],\n]", listElem.get(listElem.size()-1)));
 			
 			if (allObject==true){
-				vocStringBuffer.append(",\n   \"menus\": { \n       \"colorList\": [\"Noir\", \"Bleu\", \"Cyan\", \"Gris\", \"Vert\", \"Magenta\", \"Rouge\", \"Blanc\", \"Jaune\"],\n   },\n}");
+				vocStringBuffer.append(
+						",\n   \"menus\": { \n       "
+								+ "\"colorList\": [\""+language.get("black")+"\", \""+language.get("blue")+"\", \""+language.get("cyan")+"\", \""+language.get("grey")+"\", \""+language.get("green")+"\", \""+language.get("magenta")+"\", \""+language.get("red")+"\", \""+language.get("white")+"\", \""+language.get("yellow")+"\"],\n},\n}");
 			}else{
-				vocStringBuffer.append(",\n   \"menus\": { \n       \"colorList\": [\"Allumer\", \"Eteindre\"],\n   },\n}");
+				vocStringBuffer.append(
+						",\n   \"menus\": { \n       "
+								+ "\"colorList\": [\""+language.get("SwitchOn")+"\", \""+language.get("SwitchOff")+"\"],\n   },\n}");
 			}
-			
 		}
-		//////////////////////////////////////////
 
 
 		this.chooser.setFileFilter(new FileFilter()
@@ -138,7 +152,7 @@ public class JSONAction extends PluginAction{
 			@Override
 			public String getDescription() 
 			{
-				return "Fichiers d'extension Scratch (*.sb2)";
+				return language.get("SB2Extension");
 			}
 		});
 
