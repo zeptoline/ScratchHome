@@ -29,10 +29,14 @@ public class ControlPanel implements Runnable{
 		this.language=language;
 		this.sa = sa;
 		message = new JLabel(language.get("ServerLaunch"));
+		message.setFont(new java.awt.Font("MS Song", 0, 12));
 		status = new JLabel(language.get("StatusOn"));
+		status.setFont(new java.awt.Font("MS Song", 0, 12));
 		status.setForeground(Color.green);
 		terminate = new JButton(language.get("ServerTerminate"));
+		terminate.setFont(new java.awt.Font("MS Song", 0, 12));
 		reup = new JButton(language.get("ServerRelaunch"));
+		reup.setFont(new java.awt.Font("MS Song", 0, 12));
 	}
 
 	public void run() {
