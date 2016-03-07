@@ -6,9 +6,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Properties;
+
+import javax.swing.JOptionPane;
 
 import com.eteks.sweethome3d.io.FileUserPreferences;
 import com.eteks.sweethome3d.model.Home;
@@ -23,13 +26,15 @@ public class ScratchHomePlugin extends Plugin {
 
 	public PluginAction[] getActions() {
 
-		Properties prop = new Properties();
+
+
+		//Properties prop = new Properties();
 		Properties prop2 = new Properties();
 		InputStream input = null;
 		BufferedReader input_lang = null;
 		HashMap<String, String> language = new HashMap<String, String>(); 
 
-		String lang = "_en";
+		String lang = "en";
 
 
 
@@ -44,13 +49,34 @@ public class ScratchHomePlugin extends Plugin {
 				input = new FileInputStream(applicationPluginsFolders[0].getPath()+"/language.properties");
 
 				// load a properties file
-				prop.load(input);
-				lang = prop.getProperty("language");
+				//prop.load(input);
+				//lang = prop.getProperty("language");
+				ArrayList<String> arr = new ArrayList<String>();
+				for (String la : userPreferences.getSupportedLanguages()) {
+					arr.add(la);
+				}
+				lang = userPreferences.getLanguage();
+				
+				
+				File folder = new File(applicationPluginsFolders[0].getPath());
+				File[] listOfFiles = folder.listFiles();
+				arr.clear();
+				for (int i = 0; i < listOfFiles.length; i++) {
+					if (listOfFiles[i].isFile()) {
+						if(listOfFiles[i].getName().startsWith("language_")) {
+							arr.add(listOfFiles[i].getName().substring(9, listOfFiles[i].getName().indexOf(".")));
+						}
+					}
+				}	
+				if(!arr.contains(lang)) {
+					JOptionPane.showMessageDialog(null, "Your language does not have a properties file in your plugin folder.\n Please add a file named language_"+lang+".properties in the folder : "+applicationPluginsFolders[0].getPath()+", and complete it.", "Language not supported", JOptionPane.INFORMATION_MESSAGE);
+					return new PluginAction [] {};
+				}
 
 				//input_lang = new FileInputStream();
 				input_lang = new BufferedReader(
-						   new InputStreamReader(
-				                      new FileInputStream(applicationPluginsFolders[0].getPath()+"/language"+lang+".properties"), "UTF8"));
+						new InputStreamReader(
+								new FileInputStream(applicationPluginsFolders[0].getPath()+"/language_"+lang+".properties"), "UTF8"));
 				prop2.load(input_lang);
 
 				Enumeration<?> e = prop2.propertyNames();
