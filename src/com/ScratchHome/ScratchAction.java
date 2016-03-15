@@ -60,7 +60,11 @@ public class ScratchAction extends PluginAction {
 		setEnabled(true);
 	}
 
-
+	public void recharger(HashMap<String, String> language) {
+		this.language = language;
+		putPropertyValue(Property.NAME, language.get("ScratchActionMenu"));
+		putPropertyValue(Property.MENU, language.get("ScratchHome"));
+	}
 
 
 }

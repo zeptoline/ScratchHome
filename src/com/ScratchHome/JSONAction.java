@@ -214,6 +214,13 @@ public class JSONAction extends PluginAction{
 				System.err.println("Error: problem when creating directory: " + dirPath);  
 			}
 		}
+	}	
+	
+	
+	public void recharger(HashMap<String, String> language) {
+		this.language = language;
+		putPropertyValue(Property.NAME, language.get("ExportMenu"));
+		putPropertyValue(Property.MENU, language.get("ScratchHome"));
 	}
 
 }
