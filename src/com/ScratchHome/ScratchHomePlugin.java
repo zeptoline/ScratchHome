@@ -52,7 +52,7 @@ public class ScratchHomePlugin extends Plugin{
 		});
 
 
-		return new PluginAction [] {sa, jsa };
+		return new PluginAction [] {sa, jsa};
 
 	}
 

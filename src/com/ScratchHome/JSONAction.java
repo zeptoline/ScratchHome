@@ -3,9 +3,12 @@ package src.com.ScratchHome;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -178,23 +181,45 @@ public class JSONAction extends PluginAction{
 	 * @param append true if the text is to append at the end of the file, false otherwise.
 	 */
 	private void writeFile (String text, String filename, boolean append) {
-		PrintWriter out = null;
+		if(!filename.substring(filename.length()-4, filename.length()).equals(".sb2")) {
+			PrintWriter out = null;
+	
+			int dirPathEnd = filename.lastIndexOf(File.separator);
+			String dirPath = "";
+			if (dirPathEnd != -1) {
+				dirPath = filename.substring(0, dirPathEnd);
+				createDir(dirPath); 
+			}
+	
+			try {
+				out = new PrintWriter(new FileOutputStream(new File(filename), append));
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
+	
+			out.print(text);
+			out.close();
+		
+		} else {
+			 try {
+		            ZipOutputStream zos = new ZipOutputStream(
+		                    new FileOutputStream(filename));
 
-		int dirPathEnd = filename.lastIndexOf(File.separator);
-		String dirPath = "";
-		if (dirPathEnd != -1) {
-			dirPath = filename.substring(0, dirPathEnd);
-			createDir(dirPath); 
-		}
+		            ZipEntry json = new ZipEntry("json.json");
+		            zos.putNextEntry(json);
 
-		try {
-			out = new PrintWriter(new FileOutputStream(new File(filename), append));
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
+		            byte[] data = text.getBytes();
+		            zos.write(data, 0, data.length);
 
-		out.print(text);
-		out.close();
+		            zos.closeEntry();
+		            
+		            zos.close();
+		        } catch (IOException e) {
+		            e.printStackTrace();
+		        }
+			
+			
+		}		
 	}
 
 	/**
