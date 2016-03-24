@@ -37,9 +37,19 @@ public class ScratchHomePlugin extends Plugin{
 		
 		Home home = getHome();
 		
+
+		Properties properties = new Properties();
+		try {
+			File [] applicationPluginsFolders = ((FileUserPreferences) getUserPreferences())
+					.getApplicationSubfolders(APPLICATION_PLUGINS_SUB_FOLDER);
+			properties.load(new FileInputStream(applicationPluginsFolders[0].getPath()+"/general.properties"));
+			} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		final ScratchAction sa = new ScratchAction(home, language);
-		final JSONAction jsa = new JSONAction(home, language);
+		final JSONAction jsa = new JSONAction(home, language, properties);
 		
 		getUserPreferences().addPropertyChangeListener(UserPreferences.Property.LANGUAGE, new PropertyChangeListener() {
 
@@ -60,7 +70,8 @@ public class ScratchHomePlugin extends Plugin{
 	private void getLanguage(HashMap<String, String> language) {
 		String lang = "en";
 
-		Properties prop2 = new Properties();
+		Properties langprop = new Properties();
+		Properties properties = new Properties();
 		BufferedReader input_lang = null;
 		UserPreferences userPreferences = getUserPreferences();
 		
@@ -77,16 +88,12 @@ public class ScratchHomePlugin extends Plugin{
 				// load a properties file
 				//prop.load(input);
 				//lang = prop.getProperty("language");
-				ArrayList<String> arr = new ArrayList<String>();
-				for (String la : userPreferences.getSupportedLanguages()) {
-					arr.add(la);
-				}
+				
 				lang = userPreferences.getLanguage();
-				System.out.println(lang);
 
 				File folder = new File(applicationPluginsFolders[0].getPath());
 				File[] listOfFiles = folder.listFiles();
-				arr.clear();
+				ArrayList<String> arr = new ArrayList<String>();
 				for (int i = 0; i < listOfFiles.length; i++) {
 					if (listOfFiles[i].isFile()) {
 						if(listOfFiles[i].getName().startsWith("language_")) {
@@ -96,21 +103,22 @@ public class ScratchHomePlugin extends Plugin{
 				}	
 				if(!arr.contains(lang)) {
 					JOptionPane.showMessageDialog(null, "Your language does not have a properties file in your plugin folder.\n Please add a file named language_"+lang+".properties in the folder : "+applicationPluginsFolders[0].getPath()+", and complete it.", "Language not supported", JOptionPane.INFORMATION_MESSAGE);
-					return;
+					
+					properties.load(new FileInputStream(applicationPluginsFolders[0].getPath()+"/general.properties"));
+					lang = properties.getProperty("language");
 				}
 
 				//input_lang = new FileInputStream();
 				input_lang = new BufferedReader(
 						new InputStreamReader(
 								new FileInputStream(applicationPluginsFolders[0].getPath()+"/language_"+lang+".properties"), "UTF8"));
-				prop2.load(input_lang);
+				langprop.load(input_lang);
 
-				Enumeration<?> e = prop2.propertyNames();
+				Enumeration<?> e = langprop.propertyNames();
 				while (e.hasMoreElements()) {
 					String key = (String) e.nextElement();
-					String value = prop2.getProperty(key);
+					String value = langprop.getProperty(key);
 					language.put(key, value);
-					System.out.println(key+"  "+value);
 				}
 
 			}

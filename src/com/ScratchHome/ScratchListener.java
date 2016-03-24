@@ -137,60 +137,60 @@ public class ScratchListener implements Runnable{
 	}
 
 	private void doCommand(String cmdAndArgs) {
-		String[] cmd = cmdAndArgs.split("/"); 
 
-		if(cmd[0].equals("setColor")) {
+		cmdAndArgs= cmdAndArgs.replaceAll("%2F", "/");
+		String[] cmd = cmdAndArgs.split("/"); 
+	
+		if(cmd[0].startsWith("setColor")) {
 
 			cmd[1] = cmd[1].replaceAll("%20", "");
 			cmd[1] = cmd[1].replaceAll("[\\D]", "");
 
-			cp.changeMessage(cmd[0]+" "+cmd[1]+" "+cmd[2]);
 
 
 			int color = 0;
 			cmd[2] = cmd[2].toLowerCase();
-			if (cmd[2].equals(language.get("black"))) {
+			if (cmd[2].equals(language.get("black").toLowerCase())) {
 				color = -15000000;
 			}
-			if (cmd[2].equals(language.get("blue"))) {
+			if (cmd[2].equals(language.get("blue").toLowerCase())) {
 				color = -16776961;
 			}
-			if (cmd[2].equals(language.get("cyan"))) {
+			if (cmd[2].equals(language.get("cyan").toLowerCase())) {
 				color = -16711681;
 			}
-			if (cmd[2].equals(language.get("grey"))) {
+			if (cmd[2].equals(language.get("grey").toLowerCase())) {
 				color = -7829368;
 			}
-			if (cmd[2].equals(language.get("green"))) {
+			if (cmd[2].equals(language.get("green").toLowerCase())) {
 				color = -16711936;
 			}
-			if (cmd[2].equals(language.get("magenta"))) {
+			if (cmd[2].equals(language.get("magenta").toLowerCase())) {
 				color = -65281;
 			}
-			if (cmd[2].equals(language.get("red"))) {
+			if (cmd[2].equals(language.get("red").toLowerCase())) {
 				color = -65536;
 			}
-			if (cmd[2].equals(language.get("white"))) {
+			if (cmd[2].equals(language.get("white").toLowerCase())) {
 				color = -1;
 			}
-			if (cmd[2].equals(language.get("yellow"))) {
+			if (cmd[2].equals(language.get("yellow").toLowerCase())) {
 				color = -256;
 			}
+			cp.changeMessage(cmd[0]+" "+cmd[1]+" "+cmd[2]+" "+color);
 
 			HomeModifier.changeColor(Integer.valueOf(cmd[1]), color, this.home);
-		}else if (cmd[0].equals("switchOnOff")) {
+		}else if (cmd[0].startsWith("switchOnOff")) {
 			cmd[2] = cmd[2].replaceAll("%20", "");
 			cmd[2] = cmd[2].replaceAll("[\\D]", "");
-
-			cp.changeMessage(cmd[0]+" "+cmd[1]+" "+cmd[2]);
 
 
 			int color = 0;
 			cmd[1] = cmd[1].toLowerCase();
-			if (cmd[1].equals(language.get("On"))) {
+			if (cmd[1].equals(language.get("On").toLowerCase())) {
 				color = -256;
 			}
-			if (cmd[1].equals(language.get("Off"))) {
+			if (cmd[1].equals(language.get("Off").toLowerCase())) {
 				color = -15000000;
 			}
 			HomeModifier.changeColor(Integer.valueOf(cmd[2]), color, this.home);

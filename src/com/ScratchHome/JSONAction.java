@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -25,6 +26,10 @@ public class JSONAction extends PluginAction{
 	private HashMap<String, String> language;
 	JFileChooser chooser = new JFileChooser();
 
+
+	Properties properties;
+	
+	
 	public void execute() {
 		if(!(home.getFurniture().isEmpty())) {
 			createJSON(this.home);
@@ -33,9 +38,10 @@ public class JSONAction extends PluginAction{
 		}
 	}
 
-	public JSONAction(Home home, HashMap<String, String> language) {
+	public JSONAction(Home home, HashMap<String, String> language, Properties general_properties) {
 		this.home = home;
 		this.language = language;
+		this.properties = general_properties;
 		putPropertyValue(Property.NAME, language.get("ExportMenu"));
 		putPropertyValue(Property.MENU, language.get("ScratchHome"));
 		// Enables the action by default
@@ -43,33 +49,39 @@ public class JSONAction extends PluginAction{
 	} 
 
 	public void createJSON(Home home) {
-		
+
 		// Demande si ajout de tous les objets ou simplement les lampes
 		boolean allObject = false;
-
-		Object[] options = { language.get("AllObjects"), language.get("OnlyLights") };
-		int reply = JOptionPane.showOptionDialog(null, language.get("ChoiceOfExport"), language.get("ObjectSelection"),  JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
-		if (reply == JOptionPane.YES_OPTION)
-		{
-			allObject = true;
+		String propertiesAllObject = properties.getProperty("allObject");
+		if(propertiesAllObject.equals("OFF")){
+			Object[] options = { language.get("AllObjects"), language.get("OnlyLights") };
+			int reply = JOptionPane.showOptionDialog(null, language.get("ChoiceOfExport"), language.get("ObjectSelection"),  JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
+			if (reply == JOptionPane.YES_OPTION)
+			{
+				allObject = true;
+			}
+			if (reply == JOptionPane.CLOSED_OPTION){
+				return;
+			}
+		}else {
+			allObject = propertiesAllObject.equals("ALL");
 		}
-		if (reply == JOptionPane.CLOSED_OPTION){
-			return;
-		}
-
 		// Demande si un bloc avec menu déroulant ou un bloc par objet
 		boolean menuDeroulant = false;
-		
-		Object[] options2 = { language.get("PulldownMenuBlock"), language.get("SingleBlock")};
-		int reply2 = JOptionPane.showOptionDialog(null, language.get("TypeOfBlockChoice"), language.get("TypeOfBlock"),  JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options2, options2[0]);
-		if (reply2 == JOptionPane.YES_OPTION)
-		{
-			menuDeroulant = true;
+		String propertiesMenu = properties.getProperty("menu");
+		if (propertiesMenu.equals("OFF")) {
+			Object[] options2 = { language.get("PulldownMenuBlock"), language.get("SingleBlock")};
+			int reply2 = JOptionPane.showOptionDialog(null, language.get("TypeOfBlockChoice"), language.get("TypeOfBlock"),  JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options2, options2[0]);
+			if (reply2 == JOptionPane.YES_OPTION)
+			{
+				menuDeroulant = true;
+			}
+			if (reply2 == JOptionPane.CLOSED_OPTION){
+				return;
+			}
+		}else {
+			menuDeroulant = propertiesMenu.equals("MENU");
 		}
-		if (reply2 == JOptionPane.CLOSED_OPTION){
-			return;
-		}
-
 
 		ArrayList<String> listElem = new ArrayList<String>();
 
@@ -83,28 +95,28 @@ public class JSONAction extends PluginAction{
 			}
 
 		}
-				
+
 		StringBuffer vocStringBuffer = new StringBuffer();
 		if(menuDeroulant){
 			// Construction d'un bloc avec un menu déroulant
 			if (allObject==true){
 				vocStringBuffer.append(
 						"{  \"extensionName\": \"ScratchHome\",\n"
-						+ "   \"extensionPort\": 2016,\n"
-						+ "   \"blockSpecs\": [\n\n  "
-							+ "      [\" \", \""+language.get("ScratchMessageObjects")+"\", \"setColor\"],\n"
-						+ "],\n"
-							+ "   \"menus\": { \n       "
+								+ "   \"extensionPort\": 2016,\n"
+								+ "   \"blockSpecs\": [\n\n  "
+								+ "      [\" \", \""+language.get("ScratchMessageObjects")+"\", \"setColor\"],\n"
+								+ "],\n"
+								+ "   \"menus\": { \n       "
 								+ "\"colorList\": [\""+language.get("black")+"\", \""+language.get("blue")+"\", \""+language.get("cyan")+"\", \""+language.get("grey")+"\", \""+language.get("green")+"\", \""+language.get("magenta")+"\", \""+language.get("red")+"\", \""+language.get("white")+"\", \""+language.get("yellow")+"\"],\n       "
 								+ "\"objectList\": [ ");
 			}else{
 				vocStringBuffer.append(
 						"{  \"extensionName\": \"ScratchHome\",\n"
-						+ "   \"extensionPort\": 2016,\n"
-						+ "   \"blockSpecs\": [\n\n"
-							+ "        [\" \", \""+language.get("ScratchMessageLights")+"\", \"switchOnOff\"],\n"
-						+ "],\n"
-							+ "   \"menus\": { \n       "
+								+ "   \"extensionPort\": 2016,\n"
+								+ "   \"blockSpecs\": [\n\n"
+								+ "        [\" \", \""+language.get("ScratchMessageLights")+"\", \"switchOnOff\"],\n"
+								+ "],\n"
+								+ "   \"menus\": { \n       "
 								+ "\"colorList\": [\""+language.get("SwitchOn")+"\", \""+language.get("SwitchOff")+"\"],\n       "
 								+ "\"objectList\": [ ");
 			}
@@ -124,19 +136,23 @@ public class JSONAction extends PluginAction{
 			// construction d'un bloc par element
 			vocStringBuffer.append(
 					"{  \"extensionName\": \"ScratchHome\",\n"
-					+ "   \"extensionPort\": 2016,\n"
-					+ "   \"blockSpecs\": [\n\n");
-			
-			for( int i = 0; i < ((listElem.size())-1); i++){
-				vocStringBuffer.append(String.format("        [\" \", \""+language.get("ScratchMessageObjectsEachBlock")+"\", \"setColor\"],\n", listElem.get(i)));
-			}
-			vocStringBuffer.append(String.format("        [\" \", \""+language.get("ScratchMessageObjectsEachBlock")+"\", \"setColor\"],\n]", listElem.get(listElem.size()-1)));
-			
-			if (allObject==true){
+							+ "   \"extensionPort\": 2016,\n"
+							+ "   \"blockSpecs\": [\n\n");
+
+
+			if (allObject==true){	
+				for( int i = 0; i < ((listElem.size())); i++){
+					vocStringBuffer.append(String.format("        [\" \", \""+language.get("ScratchMessageObjectsEachBlock")+"\", \"setColor/%s\"],\n", listElem.get(i), listElem.get(i)));
+				}
+				vocStringBuffer.append("]");
 				vocStringBuffer.append(
 						",\n   \"menus\": { \n       "
 								+ "\"colorList\": [\""+language.get("black")+"\", \""+language.get("blue")+"\", \""+language.get("cyan")+"\", \""+language.get("grey")+"\", \""+language.get("green")+"\", \""+language.get("magenta")+"\", \""+language.get("red")+"\", \""+language.get("white")+"\", \""+language.get("yellow")+"\"],\n},\n}");
 			}else{
+				for( int i = 0; i < ((listElem.size())); i++){
+					vocStringBuffer.append(String.format("        [\" \", \""+language.get("ScratchMessageObjectsEachLight")+"\", \"switchOnOff/%s\"],\n", listElem.get(i), listElem.get(i)));
+				}
+				vocStringBuffer.append("]");
 				vocStringBuffer.append(
 						",\n   \"menus\": { \n       "
 								+ "\"colorList\": [\""+language.get("SwitchOn")+"\", \""+language.get("SwitchOff")+"\"],\n   },\n}");
@@ -183,42 +199,42 @@ public class JSONAction extends PluginAction{
 	private void writeFile (String text, String filename, boolean append) {
 		if(!filename.substring(filename.length()-4, filename.length()).equals(".sb2")) {
 			PrintWriter out = null;
-	
+
 			int dirPathEnd = filename.lastIndexOf(File.separator);
 			String dirPath = "";
 			if (dirPathEnd != -1) {
 				dirPath = filename.substring(0, dirPathEnd);
 				createDir(dirPath); 
 			}
-	
+
 			try {
 				out = new PrintWriter(new FileOutputStream(new File(filename), append));
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			}
-	
+
 			out.print(text);
 			out.close();
-		
+
 		} else {
-			 try {
-		            ZipOutputStream zos = new ZipOutputStream(
-		                    new FileOutputStream(filename));
+			try {
+				ZipOutputStream zos = new ZipOutputStream(
+						new FileOutputStream(filename));
 
-		            ZipEntry json = new ZipEntry("json.json");
-		            zos.putNextEntry(json);
+				ZipEntry json = new ZipEntry("project.json");
+				zos.putNextEntry(json);
 
-		            byte[] data = text.getBytes();
-		            zos.write(data, 0, data.length);
+				byte[] data = text.getBytes();
+				zos.write(data, 0, data.length);
 
-		            zos.closeEntry();
-		            
-		            zos.close();
-		        } catch (IOException e) {
-		            e.printStackTrace();
-		        }
-			
-			
+				zos.closeEntry();
+
+				zos.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+
 		}		
 	}
 
@@ -240,8 +256,8 @@ public class JSONAction extends PluginAction{
 			}
 		}
 	}	
-	
-	
+
+
 	public void recharger(HashMap<String, String> language) {
 		this.language = language;
 		putPropertyValue(Property.NAME, language.get("ExportMenu"));
