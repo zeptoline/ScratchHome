@@ -224,6 +224,33 @@ public class JSONAction extends PluginAction{
 				ZipEntry json = new ZipEntry("project.json");
 				zos.putNextEntry(json);
 
+				
+				text = "{\"objName\":\"Stage\","
+						+ "\"costumes\":[{"
+							+ "\"costumeName\": \"backdrop1\","
+							+ "\"baseLayerID\": 1,"
+							+ "\"baseLayerMD5\": \"510da64cf172d53750dffd23fbf73563.png\","
+							+ "\"bitmapResolution\": 1,"
+							+ "\"rotationCenterX\": 240,"
+							+ "\"rotationCenterY\": 180"
+							+ "}],"
+						+ "\"currentCostumeIndex\": 0,"
+						+ "\"penLayerMD5\": \"279467d0d49e152706ed66539b577c00.png\","
+						+ "\"tempoBPM\": 60,"
+						+ "\"videoAlpha\": 0.5,"
+						+ "\"children\": [],"
+						+ "\"info\" : {"
+							+ "\"videoOn\":false,"
+							+ "\"savedExtensions\": ["+text+""
+							+ "],"
+							+ "\"scriptCount\" : 0,"
+							+ "\"spriteCount\" : 0,"
+							+ "\"sfwVersion\" : \"v341\","
+							+ "\"projectID\":\"11175527\","
+							+ "\"flashVersion\" : \"LNX 10,2,159,1\","
+							+ "\"hasCloudData\" : false"
+						+ "} }";
+				
 				byte[] data = text.getBytes();
 				zos.write(data, 0, data.length);
 
@@ -235,7 +262,7 @@ public class JSONAction extends PluginAction{
 			}
 
 
-		}		
+		}	
 	}
 
 	/**

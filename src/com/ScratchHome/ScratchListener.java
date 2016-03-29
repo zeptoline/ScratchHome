@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import com.eteks.sweethome3d.model.Home;
+import com.eteks.sweethome3d.model.HomePieceOfFurniture;
 
 
 
@@ -142,8 +143,8 @@ public class ScratchListener implements Runnable{
 		String[] cmd = cmdAndArgs.split("/"); 
 	
 		if(cmd[0].startsWith("setColor")) {
-
-			cmd[1] = cmd[1].replaceAll("%20", "");
+			
+			cmd[1] = cmd[1].replaceAll("%..", "");
 			cmd[1] = cmd[1].replaceAll("[\\D]", "");
 
 
@@ -177,7 +178,12 @@ public class ScratchListener implements Runnable{
 			if (cmd[2].equals(language.get("yellow").toLowerCase())) {
 				color = -256;
 			}
-			cp.changeMessage(cmd[0]+" "+cmd[1]+" "+cmd[2]+" "+color);
+			String listofFour= " - ";
+			for (HomePieceOfFurniture four : home.getFurniture()) {
+				listofFour += four.hashCode()+" - ";
+			}
+			
+			cp.changeMessage(cmd[0]+" "+cmd[1]+" "+cmd[2]+" "+color+listofFour);
 
 			HomeModifier.changeColor(Integer.valueOf(cmd[1]), color, this.home);
 		}else if (cmd[0].startsWith("switchOnOff")) {
