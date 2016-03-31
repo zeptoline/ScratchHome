@@ -19,6 +19,7 @@ import com.eteks.sweethome3d.model.Home;
 import com.eteks.sweethome3d.model.UserPreferences;
 import com.eteks.sweethome3d.plugin.Plugin;
 import com.eteks.sweethome3d.plugin.PluginAction;
+import com.eteks.sweethome3d.viewcontroller.HomeController;
 
 
 public class ScratchHomePlugin extends Plugin{
@@ -26,8 +27,8 @@ public class ScratchHomePlugin extends Plugin{
 
 
 	public PluginAction[] getActions() {
-
-
+		
+		
 
 		final HashMap<String, String> language = new HashMap<String, String>(); 
 
@@ -47,9 +48,9 @@ public class ScratchHomePlugin extends Plugin{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+		HomeController controller = getHomeController();
 		final ScratchAction sa = new ScratchAction(home, language);
-		final JSONAction jsa = new JSONAction(home, language, properties);
+		final JSONAction jsa = new JSONAction(home, language, properties, controller);
 		
 		getUserPreferences().addPropertyChangeListener(UserPreferences.Property.LANGUAGE, new PropertyChangeListener() {
 

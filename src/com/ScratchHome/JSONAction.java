@@ -1,6 +1,7 @@
 package src.com.ScratchHome;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -18,14 +19,16 @@ import javax.swing.filechooser.FileFilter;
 import com.eteks.sweethome3d.model.Home;
 import com.eteks.sweethome3d.model.HomePieceOfFurniture;
 import com.eteks.sweethome3d.model.Light;
+import com.eteks.sweethome3d.model.RecorderException;
 import com.eteks.sweethome3d.plugin.PluginAction;
+import com.eteks.sweethome3d.viewcontroller.HomeController;
 
 public class JSONAction extends PluginAction{
 
 	private Home home;
 	private HashMap<String, String> language;
 	JFileChooser chooser = new JFileChooser();
-
+	private HomeController controller;
 
 	Properties properties;
 	
@@ -38,10 +41,11 @@ public class JSONAction extends PluginAction{
 		}
 	}
 
-	public JSONAction(Home home, HashMap<String, String> language, Properties general_properties) {
+	public JSONAction(Home home, HashMap<String, String> language, Properties general_properties, HomeController controller) {
 		this.home = home;
 		this.language = language;
 		this.properties = general_properties;
+		this.controller= controller; 
 		putPropertyValue(Property.NAME, language.get("ExportMenu"));
 		putPropertyValue(Property.MENU, language.get("ScratchHome"));
 		// Enables the action by default
@@ -238,13 +242,13 @@ public class JSONAction extends PluginAction{
 						+ "\"penLayerMD5\": \"279467d0d49e152706ed66539b577c00.png\","
 						+ "\"tempoBPM\": 60,"
 						+ "\"videoAlpha\": 0.5,"
-						+ "\"children\": [],"
+						+ "\"children\" : [],"
 						+ "\"info\" : {"
 							+ "\"videoOn\":false,"
 							+ "\"savedExtensions\": ["+text+""
 							+ "],"
 							+ "\"scriptCount\" : 0,"
-							+ "\"spriteCount\" : 0,"
+							+ "\"spriteCount\" : 1,"
 							+ "\"sfwVersion\" : \"v341\","
 							+ "\"projectID\":\"11175527\","
 							+ "\"flashVersion\" : \"LNX 10,2,159,1\","
@@ -255,7 +259,46 @@ public class JSONAction extends PluginAction{
 				zos.write(data, 0, data.length);
 
 				zos.closeEntry();
-
+				
+				ZipEntry svg = new ZipEntry("1.svg");
+				zos.putNextEntry(svg);
+				
+				
+				String tempdir = System.getProperty("java.io.tmpdir");
+				try {
+					controller.getView().exportToSVG(tempdir+"/project.svg");
+				} catch (RecorderException e) {
+					e.printStackTrace();
+				}
+//				
+//				
+//				Scanner sc = new Scanner(tempdir+"/project.svg");
+//			    String svgfile = "";
+//			    while(sc.hasNextLine()) {
+//			    	svgfile += sc.nextLine();
+//			    }
+//			    sc.close();
+//				
+//
+//				byte[] data2 = svgfile.getBytes();
+//				zos.write(data2, 0, data2.length);
+//				zos.closeEntry();
+				 FileInputStream fis = null;
+			      try {
+			        fis = new FileInputStream(tempdir+"/project.svg");
+			        byte[] byteBuffer = new byte[1024];
+			        int bytesRead = -1;
+			        while ((bytesRead = fis.read(byteBuffer)) != -1) {
+			          zos.write(byteBuffer, 0, bytesRead);
+			        }
+			        zos.flush();
+			      } finally {
+			        try {
+			          fis.close();
+			        } catch (Exception e) {
+			        }
+			      }
+			      zos.closeEntry();
 				zos.close();
 			} catch (IOException e) {
 				e.printStackTrace();
