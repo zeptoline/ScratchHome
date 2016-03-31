@@ -16,3 +16,7 @@ fr
   placer le fichier jar dans le dossier des plugins de SweetHome3D
   C'est fait, SweetHome 3D fera le reste.
   
+Projet réalisé par :
+- Cédric "zeptoline" Berland
+- Jean-Baptiste "Moussaraser" Lacour
+- Matthieu "LordInateur" Fournier
