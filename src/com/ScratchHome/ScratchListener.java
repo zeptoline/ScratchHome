@@ -12,10 +12,14 @@ import java.util.HashMap;
 import com.eteks.sweethome3d.model.Home;
 import com.eteks.sweethome3d.model.HomePieceOfFurniture;
 
-
-
+/**
+ * 
+ * Listen actions sent by Scratch in order to modify the SH3D scene
+ *
+ */
 public class ScratchListener implements Runnable{
-
+	
+	
 	private static final int PORT = 2016; // set to your extension's port number
 
 	private static InputStream sockIn;
@@ -26,34 +30,49 @@ public class ScratchListener implements Runnable{
 	private ServerSocket serverSock = null;
 
 	private Home home;
-	private ControlPanel cp;
+	private ControlPanel controlpanel;
 	private HashMap<String, String> language;
 
 
-
-	public ScratchListener (Home home, ControlPanel cp, HashMap<String, String> language) {
+	/**
+	 * ScratchListener constructor
+	 * @param home The scene of SweetHome3D, containing all the objects
+	 * @param controlpanel The view of the control panel, to modify its content 
+	 * @param language The Hashmap containing the content of the language file
+	 */
+	public ScratchListener (Home home, ControlPanel controlpanel, HashMap<String, String> language) {
 		this.home = home;
-		this.cp = cp;
+		this.controlpanel = controlpanel;
 		this.language = language;
 	}
-
+	
+	/**
+	 * Get if the server is running or not
+	 * @return return true if the server is still running 
+	 */
 	public boolean isRunning() {
 		return running;
 	}
 
-
+	/**
+	 * Function terminating the listening server
+	 */
 	public void terminate()  {
 		running = false;
 		try {
 			serverSock.close();
 		} catch (IOException e) {}
-		cp.changeStatus(false);
+		controlpanel.changeStatus(false);
 	}
 
+	
+	/**
+	 * Start the listening server
+	 */
 	public void run() {
-		cp.changeStatus(true);
+		controlpanel.changeStatus(true);
 		try {
-			cp.changeMessage(language.get("ServerLaunched"));
+			controlpanel.changeMessage(language.get("ServerLaunched"));
 			serverSock = new ServerSocket(PORT);
 			running = true;
 			while (running) {
@@ -74,14 +93,18 @@ public class ScratchListener implements Runnable{
 				if (!running)
 					break;
 			}
-			cp.changeMessage(language.get("ServerTerminated"));
+			controlpanel.changeMessage(language.get("ServerTerminated"));
 
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-
+	/**
+	 * Function to handle incoming messages from Scratch
+	 * (Thanks to the A4S github project for having the code, see at https://github.com/damellis/A4S) 
+	 * @throws IOException
+	 */
 	private void handleRequest() throws IOException {
 		String httpBuf = "";
 		int i;
@@ -114,6 +137,10 @@ public class ScratchListener implements Runnable{
 		else if (header.equals("reset_all")) return;
 		else doCommand(header);
 	}
+	/**
+	 * Function to say to Scratch that the server is up and running
+	 * It is called if the listening server catch a crossdomain request
+	 */
 	private static void sendPolicyFile() {
 		// Send a Flash null-teriminated cross-domain policy file.
 		String policyFile =
@@ -122,21 +149,26 @@ public class ScratchListener implements Runnable{
 						"</cross-domain-policy>\n\0";
 		sendResponse(policyFile);
 	}
-
-
-	private static void sendResponse(String s) {
+	/**
+	 * Send a response to Scratch
+	 * @param response the message to send (it encapsulate it with http header)
+	 */
+	private static void sendResponse(String response) {
 		String crlf = "\r\n";
 		String httpResponse = "HTTP/1.1 200 OK" + crlf;
 		httpResponse += "Content-Type: text/html; charset=ISO-8859-1" + crlf;
 		httpResponse += "Access-Control-Allow-Origin: *" + crlf;
 		httpResponse += crlf;
-		httpResponse += s + crlf;
+		httpResponse += response + crlf;
 		try {
 			byte[] outBuf = httpResponse.getBytes();
 			sockOut.write(outBuf, 0, outBuf.length);
 		} catch (Exception ignored) { }
 	}
-
+	/**
+	 * Method using the action from Scratch to change the home in SH3D
+	 * @param cmdAndArgs The action from Scratch
+	 */
 	private void doCommand(String cmdAndArgs) {
 
 		cmdAndArgs= cmdAndArgs.replaceAll("%2F", "/");
@@ -183,7 +215,7 @@ public class ScratchListener implements Runnable{
 				listofFour += four.hashCode()+" - ";
 			}
 			
-			cp.changeMessage(cmd[0]+" "+cmd[1]+" "+cmd[2]+" "+color+listofFour);
+			controlpanel.changeMessage(cmd[0]+" "+cmd[1]+" "+cmd[2]+" "+color+listofFour);
 
 			HomeModifier.changeColor(Integer.valueOf(cmd[1]), color, this.home);
 		}else if (cmd[0].startsWith("switchOnOff")) {
