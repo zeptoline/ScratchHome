@@ -21,11 +21,16 @@ import com.eteks.sweethome3d.plugin.Plugin;
 import com.eteks.sweethome3d.plugin.PluginAction;
 import com.eteks.sweethome3d.viewcontroller.HomeController;
 
-
+/**
+ * The main class of the ScratchHome plugin
+ */
 public class ScratchHomePlugin extends Plugin{
 	private static final String     APPLICATION_PLUGINS_SUB_FOLDER = "plugins";
 
-
+	/**
+	 * Method used by SH3D to get item for the menu (classes to load)
+	 * It's also used to get all the informations needed for those actions (languages or properties files)
+	 */
 	public PluginAction[] getActions() {
 		
 		
@@ -41,19 +46,19 @@ public class ScratchHomePlugin extends Plugin{
 
 		Properties properties = new Properties();
 		try {
+			//Get the folder of the plugin folder of ScratchHome
 			File [] applicationPluginsFolders = ((FileUserPreferences) getUserPreferences())
 					.getApplicationSubfolders(APPLICATION_PLUGINS_SUB_FOLDER);
 			properties.load(new FileInputStream(applicationPluginsFolders[0].getPath()+"/general.properties"));
-			} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+			} 
+			catch (IOException e) {e.printStackTrace();}
+		
 		HomeController controller = getHomeController();
 		final ScratchAction sa = new ScratchAction(home, language);
 		final JSONAction jsa = new JSONAction(home, language, properties, controller);
 		
+		//Put a listener on the language property, to reload the actions when it is changed
 		getUserPreferences().addPropertyChangeListener(UserPreferences.Property.LANGUAGE, new PropertyChangeListener() {
-
 			public void propertyChange(PropertyChangeEvent arg0) {
 				getLanguage(language);
 				
@@ -62,12 +67,13 @@ public class ScratchHomePlugin extends Plugin{
 			}
 		});
 
-
 		return new PluginAction [] {sa, jsa};
-
 	}
 
-
+	/**
+	 * Method to get the language in the referenced property file
+	 * @param language the HashMap used to stock all the sentences of the plugin
+	 */
 	private void getLanguage(HashMap<String, String> language) {
 		String lang = "en";
 
@@ -76,9 +82,6 @@ public class ScratchHomePlugin extends Plugin{
 		BufferedReader input_lang = null;
 		UserPreferences userPreferences = getUserPreferences();
 		
-		//language.clear();
-
-
 		try {
 
 			if (userPreferences instanceof FileUserPreferences) {
@@ -86,9 +89,6 @@ public class ScratchHomePlugin extends Plugin{
 						.getApplicationSubfolders(APPLICATION_PLUGINS_SUB_FOLDER);
 
 
-				// load a properties file
-				//prop.load(input);
-				//lang = prop.getProperty("language");
 				
 				lang = userPreferences.getLanguage();
 
@@ -101,15 +101,14 @@ public class ScratchHomePlugin extends Plugin{
 							arr.add(listOfFiles[i].getName().substring(9, listOfFiles[i].getName().indexOf(".")));
 						}
 					}
-				}	
+				}
 				if(!arr.contains(lang)) {
 					JOptionPane.showMessageDialog(null, "Your language does not have a properties file in your plugin folder.\n Please add a file named language_"+lang+".properties in the folder : "+applicationPluginsFolders[0].getPath()+", and complete it.", "Language not supported", JOptionPane.INFORMATION_MESSAGE);
 					
 					properties.load(new FileInputStream(applicationPluginsFolders[0].getPath()+"/general.properties"));
 					lang = properties.getProperty("language");
 				}
-
-				//input_lang = new FileInputStream();
+				
 				input_lang = new BufferedReader(
 						new InputStreamReader(
 								new FileInputStream(applicationPluginsFolders[0].getPath()+"/language_"+lang+".properties"), "UTF8"));

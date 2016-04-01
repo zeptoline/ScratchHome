@@ -13,7 +13,11 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-
+/**
+ * 
+ * The view for the server. Allow to restart it or close it.
+ *
+ */
 public class ControlPanel implements Runnable{
 
 	private ScratchAction sa;
@@ -24,7 +28,11 @@ public class ControlPanel implements Runnable{
 	
 	private HashMap<String, String> language;
 	
-	
+	/**
+	 * ControlPanel constructor
+	 * @param sa The class for the button in the menu (used to disable or re-enabling it if the server is running/closed)
+	 * @param language The HashMap containing all the String loaded from the langage file
+	 */
 	public ControlPanel (ScratchAction sa, HashMap<String, String> language) {
 		this.language=language;
 		this.sa = sa;
@@ -38,7 +46,9 @@ public class ControlPanel implements Runnable{
 		reup = new JButton(language.get("ServerRelaunch"));
 		reup.setFont(new java.awt.Font("MS Song", 0, 12));
 	}
-
+	/**
+	 * Launch the control panel
+	 */
 	public void run() {
 		final JFrame frame = new JFrame(language.get("ControlPanel"));
 		JPanel panel = new JPanel(new BorderLayout());
@@ -100,12 +110,19 @@ public class ControlPanel implements Runnable{
 		frame.setVisible(true);
 	}
 	
-	
+	/**
+	 * Change the displayed message
+	 * @param newMessage The new message to display
+	 */
 	public void changeMessage(String newMessage) {
 		message.setText(newMessage);
 	}
-	public void changeStatus(boolean enCours) {
-		if(enCours) {
+	/**
+	 * Change the status of the server (ON if running, OFF otherwise)
+	 * @param running new value of the server (true if running, false otherwise)  
+	 */
+	public void changeStatus(boolean running) {
+		if(running) {
 			status.setText(language.get("StatusOn"));
 			status.setForeground(Color.green);
 			reup.setVisible(false);
