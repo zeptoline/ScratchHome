@@ -25,14 +25,16 @@ import com.eteks.sweethome3d.viewcontroller.HomeController;
 
 public class JSONAction extends PluginAction{
 
-	private Home home;
-	private HashMap<String, String> language;
+	private Home home; //representing the 3D scene
+	private HashMap<String, String> language; //list of plugin languages 
 	JFileChooser chooser = new JFileChooser();
-	private HomeController controller;
+	private HomeController controller; //get view methods
 
-	Properties properties;
-	
-	
+	Properties properties; //SH3D properties (ie. user language)
+		
+    /**
+     * Method called by launching JSONAction in the plugin menu. If the 3D scene is not empty, calls the function to create the JSON.
+     */
 	public void execute() {
 		if(!(home.getFurniture().isEmpty())) {
 			createJSON(this.home);
@@ -41,6 +43,13 @@ public class JSONAction extends PluginAction{
 		}
 	}
 
+	/**
+	 * JSONAction Constructor.
+	 * @param home representing the 3D scene.
+	 * @param language the list of plugin languages.
+	 * @param general_properties SH3D properties (ie. user language).
+	 * @param controller to get view methods.
+	 */
 	public JSONAction(Home home, HashMap<String, String> language, Properties general_properties, HomeController controller) {
 		this.home = home;
 		this.language = language;
@@ -52,9 +61,14 @@ public class JSONAction extends PluginAction{
 		setEnabled(true);
 	} 
 
+	/**
+	 * Method to create JSON file representing SH3D scene objects and putting it in a SB2 file which is the Scratch project format.
+	 * Creating also a SVG picture, added to the SB2 file, representing the SH3D scene for watching it in Scratch project.
+	 *
+	 * @param home representing the 3D scene.
+	 */
 	public void createJSON(Home home) {
-
-		// Demande si ajout de tous les objets ou simplement les lampes
+		//A JSwing window to ask what export : all objects or only lights
 		boolean allObject = false;
 		String propertiesAllObject = properties.getProperty("allObject");
 		if(propertiesAllObject.equals("OFF")){
@@ -70,7 +84,8 @@ public class JSONAction extends PluginAction{
 		}else {
 			allObject = propertiesAllObject.equals("ALL");
 		}
-		// Demande si un bloc avec menu déroulant ou un bloc par objet
+		
+		//A JSwing window to ask how export : all objects in only one Scratch block or one block per object
 		boolean menuDeroulant = false;
 		String propertiesMenu = properties.getProperty("menu");
 		if (propertiesMenu.equals("OFF")) {
@@ -87,8 +102,9 @@ public class JSONAction extends PluginAction{
 			menuDeroulant = propertiesMenu.equals("MENU");
 		}
 
+		//A list to add current 3D scene objects
 		ArrayList<String> listElem = new ArrayList<String>();
-
+		//Adding objects to the previous list
 		for (HomePieceOfFurniture fourniture : home.getFurniture()) {
 			if(allObject==true){
 				listElem.add(fourniture.getName()+"("+fourniture.hashCode()+")");
@@ -100,9 +116,11 @@ public class JSONAction extends PluginAction{
 
 		}
 
+		
 		StringBuffer vocStringBuffer = new StringBuffer();
 		if(menuDeroulant){
-			// Construction d'un bloc avec un menu déroulant
+			//Below is the JSON to create an only Scratch block containing all objects/all lights
+			//if all objects were chosen
 			if (allObject==true){
 				vocStringBuffer.append(
 						"{  \"extensionName\": \"ScratchHome\",\n"
@@ -113,6 +131,7 @@ public class JSONAction extends PluginAction{
 								+ "   \"menus\": { \n       "
 								+ "\"colorList\": [\""+language.get("black")+"\", \""+language.get("blue")+"\", \""+language.get("cyan")+"\", \""+language.get("grey")+"\", \""+language.get("green")+"\", \""+language.get("magenta")+"\", \""+language.get("red")+"\", \""+language.get("white")+"\", \""+language.get("yellow")+"\"],\n       "
 								+ "\"objectList\": [ ");
+			//if only lights were chosen
 			}else{
 				vocStringBuffer.append(
 						"{  \"extensionName\": \"ScratchHome\",\n"
@@ -124,7 +143,6 @@ public class JSONAction extends PluginAction{
 								+ "\"colorList\": [\""+language.get("SwitchOn")+"\", \""+language.get("SwitchOff")+"\"],\n       "
 								+ "\"objectList\": [ ");
 			}
-
 			for( int i = 0; i < listElem.size(); i++){
 				if(i!=0){
 					vocStringBuffer.append(", \""+listElem.get(i)+"\"");
@@ -137,13 +155,12 @@ public class JSONAction extends PluginAction{
 
 		} 
 		else {
-			// construction d'un bloc par element
+			//Below is the JSON to create a Scratch block for each objects/lights
 			vocStringBuffer.append(
 					"{  \"extensionName\": \"ScratchHome\",\n"
 							+ "   \"extensionPort\": 2016,\n"
 							+ "   \"blockSpecs\": [\n\n");
-
-
+			//if all objects were chosen
 			if (allObject==true){	
 				for( int i = 0; i < ((listElem.size())); i++){
 					vocStringBuffer.append(String.format("        [\" \", \""+language.get("ScratchMessageObjectsEachBlock")+"\", \"setColor/%s\"],\n", listElem.get(i), listElem.get(i)));
@@ -152,6 +169,7 @@ public class JSONAction extends PluginAction{
 				vocStringBuffer.append(
 						",\n   \"menus\": { \n       "
 								+ "\"colorList\": [\""+language.get("black")+"\", \""+language.get("blue")+"\", \""+language.get("cyan")+"\", \""+language.get("grey")+"\", \""+language.get("green")+"\", \""+language.get("magenta")+"\", \""+language.get("red")+"\", \""+language.get("white")+"\", \""+language.get("yellow")+"\"],\n},\n}");
+			//if only lights were chosen
 			}else{
 				for( int i = 0; i < ((listElem.size())); i++){
 					vocStringBuffer.append(String.format("        [\" \", \""+language.get("ScratchMessageObjectsEachLight")+"\", \"switchOnOff/%s\"],\n", listElem.get(i), listElem.get(i)));
@@ -163,7 +181,7 @@ public class JSONAction extends PluginAction{
 			}
 		}
 
-
+		//Below the code to deal with the File filter window in order to create the Sb2 file (with a call to writeFile function)
 		this.chooser.setFileFilter(new FileFilter()
 		{
 			@Override
@@ -183,15 +201,15 @@ public class JSONAction extends PluginAction{
 
 		if (n==JFileChooser.APPROVE_OPTION) {
 			String chemin = this.chooser.getSelectedFile().toString();
+			//check if user has written ".sb2" at the end of its file and let it or remove it 
 			if(chemin.substring(chemin.length()-4, chemin.length()).equals(".sb2")) {
+				//writeFile function is called to create a true SB2 file (that is a .zip actually)
 				this.writeFile(vocStringBuffer.toString(), chemin, false);
 			} else {
 				this.writeFile(vocStringBuffer.toString(), chemin+".sb2", false);
 			}
 		} 
 	}
-
-
 
 	/**
 	 * Method writing a text in a file (by overwriting it or concatenating it).
@@ -228,7 +246,7 @@ public class JSONAction extends PluginAction{
 				ZipEntry json = new ZipEntry("project.json");
 				zos.putNextEntry(json);
 
-				
+				//Below the text to write in the JSON in order to be considered as correct for a Scratch project
 				text = "{\"objName\":\"Stage\","
 						+ "\"costumes\":[{"
 							+ "\"costumeName\": \"backdrop1\","
@@ -270,35 +288,23 @@ public class JSONAction extends PluginAction{
 				} catch (RecorderException e) {
 					e.printStackTrace();
 				}
-//				
-//				
-//				Scanner sc = new Scanner(tempdir+"/project.svg");
-//			    String svgfile = "";
-//			    while(sc.hasNextLine()) {
-//			    	svgfile += sc.nextLine();
-//			    }
-//			    sc.close();
-//				
-//
-//				byte[] data2 = svgfile.getBytes();
-//				zos.write(data2, 0, data2.length);
-//				zos.closeEntry();
-				 FileInputStream fis = null;
-			      try {
-			        fis = new FileInputStream(tempdir+"/project.svg");
-			        byte[] byteBuffer = new byte[1024];
-			        int bytesRead = -1;
-			        while ((bytesRead = fis.read(byteBuffer)) != -1) {
-			          zos.write(byteBuffer, 0, bytesRead);
-			        }
-			        zos.flush();
-			      } finally {
-			        try {
-			          fis.close();
-			        } catch (Exception e) {
-			        }
-			      }
-			      zos.closeEntry();
+
+				FileInputStream fis = null;
+				try {
+				  fis = new FileInputStream(tempdir+"/project.svg");
+				  byte[] byteBuffer = new byte[1024];
+				  int bytesRead = -1;
+				  while ((bytesRead = fis.read(byteBuffer)) != -1) {
+				    zos.write(byteBuffer, 0, bytesRead);
+				  }
+				  zos.flush();
+				} finally {
+				  try {
+				    fis.close();
+				  } catch (Exception e) {
+				  }
+				}
+				zos.closeEntry();
 				zos.close();
 			} catch (IOException e) {
 				e.printStackTrace();
