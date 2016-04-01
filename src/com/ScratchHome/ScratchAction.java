@@ -7,7 +7,10 @@ import java.util.HashMap;
 import com.eteks.sweethome3d.model.Home;
 import com.eteks.sweethome3d.plugin.PluginAction;
 
-
+/**
+ * Allow the listening of Scratch' actions and modifications on SH3D scene
+ * 
+ */
 public class ScratchAction extends PluginAction {
 
 	private boolean instanciate = true;
@@ -17,16 +20,21 @@ public class ScratchAction extends PluginAction {
 	private Home home;
 	private Thread thread = null;
 	private Thread control = null;
-	private ControlPanel cp = null;
-	private ScratchListener sl = null;
+	private ControlPanel controlPanel = null;
+	private ScratchListener scratchListener = null;
 
+	/**
+	 * Method called by launching ScratchAction in the plugin menu. If not launched already, launch the server listening Scratc actions.
+	 * 
+	 */
 	public void execute() {
+		//instanciate is true when the server is already launched
 		if(instanciate) {
-			cp = new ControlPanel(this, language);
-			sl = new ScratchListener(home, cp, language);
-			thread = new Thread(sl);
+			controlPanel = new ControlPanel(this, language);
+			scratchListener = new ScratchListener(home, controlPanel, language);
+			thread = new Thread(scratchListener);
 			thread.start();
-			control = new Thread(cp);
+			control = new Thread(controlPanel);
 			control.start();
 			
 			instanciate = false;
@@ -34,23 +42,42 @@ public class ScratchAction extends PluginAction {
 		setEnabled(false);
 
 	}
+	
+	/**
+	 * Method to close the server
+	 * 
+	 */
 	public void closeListener() {
-		sl.terminate();
+		scratchListener.terminate();
 	}
 
+	/**
+	 * Method that allow to instanciate again the server
+	 * 
+	 */
 	public void reInstanciate() {
 		instanciate = true;
 		setEnabled(true);
 	}
 	
+	/**
+	 * Metho that launch again the server
+	 * 
+	 */
 	public void reupListener() {
-		if (!sl.isRunning()) {
-			sl = new ScratchListener(home, cp, language);
-			thread = new Thread(sl);
+		if (!scratchListener.isRunning()) {
+			scratchListener = new ScratchListener(home, controlPanel, language);
+			thread = new Thread(scratchListener);
 			thread.start();
 		}
 	}
 	
+	/**
+	 * ScratchAction constructor
+	 * 
+	 * @param home representing the 3D scene. 
+	 * @param language the list of plugin languages.
+	 */
 	public ScratchAction(Home home, HashMap<String, String> language) {
 		this.home = home;
 		this.language = language;
@@ -60,6 +87,11 @@ public class ScratchAction extends PluginAction {
 		setEnabled(true);
 	}
 
+	/**
+	 * Method to reload plugin language 
+	 * 
+	 * @param language 
+	 */
 	public void recharger(HashMap<String, String> language) {
 		this.language = language;
 		putPropertyValue(Property.NAME, language.get("ScratchActionMenu"));

@@ -13,7 +13,11 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-
+/**
+ * 
+ *
+ *
+ */
 public class ControlPanel implements Runnable{
 
 	private ScratchAction sa;

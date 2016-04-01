@@ -23,6 +23,10 @@ import com.eteks.sweethome3d.model.RecorderException;
 import com.eteks.sweethome3d.plugin.PluginAction;
 import com.eteks.sweethome3d.viewcontroller.HomeController;
 
+/**
+ *Create a SB2 file (actually a ZIP), that is the Scratch project format, by creating a JSON and SVG to represent SH3D scene's objects
+ *
+ */
 public class JSONAction extends PluginAction{
 
 	private Home home; //representing the 3D scene
@@ -34,6 +38,7 @@ public class JSONAction extends PluginAction{
 		
     /**
      * Method called by launching JSONAction in the plugin menu. If the 3D scene is not empty, calls the function to create the JSON.
+     *
      */
 	public void execute() {
 		if(!(home.getFurniture().isEmpty())) {
@@ -219,125 +224,88 @@ public class JSONAction extends PluginAction{
 	 * @param append true if the text is to append at the end of the file, false otherwise.
 	 */
 	private void writeFile (String text, String filename, boolean append) {
-		if(!filename.substring(filename.length()-4, filename.length()).equals(".sb2")) {
-			PrintWriter out = null;
+		//we create a zip file, that contains the JSON and a SVG picture
+		try {
+			ZipOutputStream zos = new ZipOutputStream(
+					new FileOutputStream(filename));
 
-			int dirPathEnd = filename.lastIndexOf(File.separator);
-			String dirPath = "";
-			if (dirPathEnd != -1) {
-				dirPath = filename.substring(0, dirPathEnd);
-				createDir(dirPath); 
-			}
+			ZipEntry json = new ZipEntry("project.json");
+			zos.putNextEntry(json);
 
+			//Below the text to write in the JSON in order to be considered as correct for a Scratch project
+			text = "{\"objName\":\"Stage\","
+					+ "\"costumes\":[{"
+					+ "\"costumeName\": \"backdrop1\","
+					+ "\"baseLayerID\": 1,"
+					+ "\"baseLayerMD5\": \"510da64cf172d53750dffd23fbf73563.png\","
+					+ "\"bitmapResolution\": 1,"
+					+ "\"rotationCenterX\": 240,"
+					+ "\"rotationCenterY\": 180"
+					+ "}],"
+					+ "\"currentCostumeIndex\": 0,"
+					+ "\"penLayerMD5\": \"279467d0d49e152706ed66539b577c00.png\","
+					+ "\"tempoBPM\": 60,"
+					+ "\"videoAlpha\": 0.5,"
+					+ "\"children\" : [],"
+					+ "\"info\" : {"
+					+ "\"videoOn\":false,"
+					+ "\"savedExtensions\": ["+text+""
+					+ "],"
+					+ "\"scriptCount\" : 0,"
+					+ "\"spriteCount\" : 1,"
+					+ "\"sfwVersion\" : \"v341\","
+					+ "\"projectID\":\"11175527\","
+					+ "\"flashVersion\" : \"LNX 10,2,159,1\","
+					+ "\"hasCloudData\" : false"
+					+ "} }";
+
+			byte[] data = text.getBytes();
+			zos.write(data, 0, data.length);
+
+			zos.closeEntry(); //don't forget to close the entry
+
+			ZipEntry svg = new ZipEntry("1.svg");
+			zos.putNextEntry(svg);
+
+			
+			String tempdir = System.getProperty("java.io.tmpdir");
 			try {
-				out = new PrintWriter(new FileOutputStream(new File(filename), append));
-			} catch (FileNotFoundException e) {
+				//get a SVG picture of the SH3D 2D scene
+				controller.getView().exportToSVG(tempdir+"/project.svg");
+			} catch (RecorderException e) {
 				e.printStackTrace();
 			}
-
-			out.print(text);
-			out.close();
-
-		} else {
+			//adding the SVG file to the SB2
+			FileInputStream fis = null;
 			try {
-				ZipOutputStream zos = new ZipOutputStream(
-						new FileOutputStream(filename));
-
-				ZipEntry json = new ZipEntry("project.json");
-				zos.putNextEntry(json);
-
-				//Below the text to write in the JSON in order to be considered as correct for a Scratch project
-				text = "{\"objName\":\"Stage\","
-						+ "\"costumes\":[{"
-							+ "\"costumeName\": \"backdrop1\","
-							+ "\"baseLayerID\": 1,"
-							+ "\"baseLayerMD5\": \"510da64cf172d53750dffd23fbf73563.png\","
-							+ "\"bitmapResolution\": 1,"
-							+ "\"rotationCenterX\": 240,"
-							+ "\"rotationCenterY\": 180"
-							+ "}],"
-						+ "\"currentCostumeIndex\": 0,"
-						+ "\"penLayerMD5\": \"279467d0d49e152706ed66539b577c00.png\","
-						+ "\"tempoBPM\": 60,"
-						+ "\"videoAlpha\": 0.5,"
-						+ "\"children\" : [],"
-						+ "\"info\" : {"
-							+ "\"videoOn\":false,"
-							+ "\"savedExtensions\": ["+text+""
-							+ "],"
-							+ "\"scriptCount\" : 0,"
-							+ "\"spriteCount\" : 1,"
-							+ "\"sfwVersion\" : \"v341\","
-							+ "\"projectID\":\"11175527\","
-							+ "\"flashVersion\" : \"LNX 10,2,159,1\","
-							+ "\"hasCloudData\" : false"
-						+ "} }";
-				
-				byte[] data = text.getBytes();
-				zos.write(data, 0, data.length);
-
-				zos.closeEntry();
-				
-				ZipEntry svg = new ZipEntry("1.svg");
-				zos.putNextEntry(svg);
-				
-				
-				String tempdir = System.getProperty("java.io.tmpdir");
-				try {
-					controller.getView().exportToSVG(tempdir+"/project.svg");
-				} catch (RecorderException e) {
-					e.printStackTrace();
+				fis = new FileInputStream(tempdir+"/project.svg");
+				byte[] byteBuffer = new byte[1024];
+				int bytesRead = -1;
+				while ((bytesRead = fis.read(byteBuffer)) != -1) {
+					zos.write(byteBuffer, 0, bytesRead);
 				}
-
-				FileInputStream fis = null;
+				zos.flush();
+			} finally {
 				try {
-				  fis = new FileInputStream(tempdir+"/project.svg");
-				  byte[] byteBuffer = new byte[1024];
-				  int bytesRead = -1;
-				  while ((bytesRead = fis.read(byteBuffer)) != -1) {
-				    zos.write(byteBuffer, 0, bytesRead);
-				  }
-				  zos.flush();
-				} finally {
-				  try {
-				    fis.close();
-				  } catch (Exception e) {
-				  }
+					fis.close();
+				} catch (Exception e) {
 				}
-				zos.closeEntry();
-				zos.close();
-			} catch (IOException e) {
-				e.printStackTrace();
 			}
-
-
-		}	
-	}
-
-	/**
-	 * Method creating a directory.
-	 * 
-	 * @param dirPath the path of the directory to create.
-	 */
-	private void createDir(String dirPath) {
-		File theDir = new File(dirPath);
-
-		// if the directory does not exist, create it
-		if (!theDir.exists()) {
-			System.err.println("Info: creating directory: " + dirPath);
-			boolean result = theDir.mkdir();  
-
-			if(!result) {    
-				System.err.println("Error: problem when creating directory: " + dirPath);  
-			}
+			zos.closeEntry();
+			zos.close();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}	
 
-
+	/**
+	 * Method to reload plugin language 
+	 * 
+	 * @param language 
+	 */
 	public void recharger(HashMap<String, String> language) {
 		this.language = language;
 		putPropertyValue(Property.NAME, language.get("ExportMenu"));
 		putPropertyValue(Property.MENU, language.get("ScratchHome"));
 	}
-
 }
