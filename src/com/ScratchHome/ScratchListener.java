@@ -18,8 +18,8 @@ import com.eteks.sweethome3d.model.HomePieceOfFurniture;
  *
  */
 public class ScratchListener implements Runnable{
-	
-	
+
+
 	private static final int PORT = 2016; // set to your extension's port number
 
 	private static InputStream sockIn;
@@ -45,7 +45,7 @@ public class ScratchListener implements Runnable{
 		this.controlpanel = controlpanel;
 		this.language = language;
 	}
-	
+
 	/**
 	 * Get if the server is running or not
 	 * @return return true if the server is still running 
@@ -65,7 +65,7 @@ public class ScratchListener implements Runnable{
 		controlpanel.changeStatus(false);
 	}
 
-	
+
 	/**
 	 * Start the listening server
 	 */
@@ -173,9 +173,9 @@ public class ScratchListener implements Runnable{
 
 		cmdAndArgs= cmdAndArgs.replaceAll("%2F", "/");
 		String[] cmd = cmdAndArgs.split("/"); 
-	
+
 		if(cmd[0].startsWith("setColor")) {
-			
+
 			cmd[1] = cmd[1].replaceAll("%..", "");
 			cmd[1] = cmd[1].replaceAll("[\\D]", "");
 
@@ -214,24 +214,40 @@ public class ScratchListener implements Runnable{
 			for (HomePieceOfFurniture four : home.getFurniture()) {
 				listofFour += four.hashCode()+" - ";
 			}
-			
-			controlpanel.changeMessage(cmd[0]+" "+cmd[1]+" "+cmd[2]+" "+color+listofFour);
+
+			controlpanel.changeMessage(cmd[0]+" -- "+cmd[1]+" -- "+cmd[2]+" -- "+color+listofFour);
 
 			HomeModifier.changeColor(Integer.valueOf(cmd[1]), color, this.home);
 		}else if (cmd[0].startsWith("switchOnOff")) {
-			cmd[2] = cmd[2].replaceAll("%20", "");
-			cmd[2] = cmd[2].replaceAll("[\\D]", "");
-
-
+			//bloc :   	SwitchOnOff/ID/Allumer
+			//list :	SwitchOnOff/Allumer/ID
+			
 			int color = 0;
-			cmd[1] = cmd[1].toLowerCase();
-			if (cmd[1].equals(language.get("On").toLowerCase())) {
+			String modifier = "";
+			int hash = -1; 
+			if(cmd[1].equals(language.get("On")) || cmd[1].equals(language.get("Off"))){
+
+				cmd[2] = cmd[2].replaceAll("%..", "");
+				cmd[2] = cmd[2].replaceAll("[\\D]", "");
+				hash = Integer.valueOf(cmd[2]);
+				modifier = cmd[1];
+			} else {
+				cmd[1] = cmd[1].replaceAll("%..", "");
+				cmd[1] = cmd[1].replaceAll("[\\D]", "");
+				hash = Integer.valueOf(cmd[1]);
+				modifier = cmd[2];
+			}
+			
+			modifier = modifier.toLowerCase();
+			if (modifier.equals(language.get("On").toLowerCase())) {
 				color = -256;
 			}
-			if (cmd[1].equals(language.get("Off").toLowerCase())) {
+			if (modifier.equals(language.get("Off").toLowerCase())) {
 				color = -15000000;
 			}
-			HomeModifier.changeColor(Integer.valueOf(cmd[2]), color, this.home);
+			controlpanel.changeMessage("switchOnOff -- "+modifier+" -- "+hash);
+			HomeModifier.changeColor(hash, color, this.home);
+
 		}
 	}
 
