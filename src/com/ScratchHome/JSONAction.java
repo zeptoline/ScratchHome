@@ -2,15 +2,26 @@ package src.com.ScratchHome;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -275,6 +286,50 @@ public class JSONAction extends PluginAction{
 			} catch (RecorderException e) {
 				e.printStackTrace();
 			}
+			
+			//resizing the SVG because Scratch needs a 480x360 SVG
+			try {
+				String filepath = tempdir+"/project.svg";
+				DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+				DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+				Document doc = docBuilder.parse(filepath);
+
+				// Get the svg element by tag name directly
+				Node svgNode = doc.getElementsByTagName("svg").item(0);
+
+				// update width attribute
+				NamedNodeMap attr = svgNode.getAttributes();
+				Node nodeAttr = attr.getNamedItem("width");
+				nodeAttr.setTextContent("480px");
+
+				// update height attribute
+				nodeAttr = attr.getNamedItem("height");
+				nodeAttr.setTextContent("360px");
+				
+				// write the content into xml file
+				TransformerFactory transformerFactory = TransformerFactory.newInstance();
+				Transformer transformer = transformerFactory.newTransformer();
+				DOMSource source = new DOMSource(doc);
+				StreamResult result = new StreamResult(new File(filepath));
+				transformer.transform(source, result);
+
+				
+
+			} catch (ParserConfigurationException pce) {
+				JOptionPane.showMessageDialog(null, pce.toString(), "InfoBox: ", JOptionPane.INFORMATION_MESSAGE);
+				
+			} catch (TransformerException tfe) {
+				JOptionPane.showMessageDialog(null, tfe.toString(), "InfoBox: " , JOptionPane.INFORMATION_MESSAGE);
+				tfe.printStackTrace();
+			} catch (IOException ioe) {
+				JOptionPane.showMessageDialog(null, ioe.toString(), "InfoBox: " , JOptionPane.INFORMATION_MESSAGE);
+				ioe.printStackTrace();
+			} catch (SAXException sae) {
+				JOptionPane.showMessageDialog(null, sae.toString(), "InfoBox: " , JOptionPane.INFORMATION_MESSAGE);
+				sae.printStackTrace();
+			}
+				
+			
 			//adding the SVG file to the SB2
 			FileInputStream fis = null;
 			try {
