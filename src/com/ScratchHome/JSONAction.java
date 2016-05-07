@@ -18,7 +18,9 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
@@ -289,46 +291,50 @@ public class JSONAction extends PluginAction{
 			
 			//resizing the SVG because Scratch needs a 480x360 SVG
 			try {
+				//get the SVG file (which is a XML file)
 				String filepath = tempdir+"/project.svg";
 				DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 				DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 				Document doc = docBuilder.parse(filepath);
-
-				// Get the svg element by tag name directly
+		
+				//get the svg element by tag name directly
 				Node svgNode = doc.getElementsByTagName("svg").item(0);
 
-				// update width attribute
+				//get width attribute value (and remove non numeric characters because the whole value finishes with "px")
 				NamedNodeMap attr = svgNode.getAttributes();
 				Node nodeAttr = attr.getNamedItem("width");
-				nodeAttr.setTextContent("480px");
-
-				// update height attribute
+				double width = Double.parseDouble(nodeAttr.getTextContent().replaceAll("\\D", ""));
+				//get height attribute value
 				nodeAttr = attr.getNamedItem("height");
-				nodeAttr.setTextContent("360px");
+				double height = Double.parseDouble(nodeAttr.getTextContent().replaceAll("\\D", ""));
 				
-				// write the content into xml file
+				//calculate best scale factor both for width and height
+				double x1 = 480/width;
+				double x2 = 360/height;
+				//keep the lower value to be sure the SVG won't be trimmed
+				double x = Math.min(x1, x2);
+				
+				//get the first g node in the xml file
+				Node gNode1 = doc.getElementsByTagName("g").item(0);
+				//add transform attribute to this node with the right scale factor
+				((Element)gNode1).setAttribute("transform","scale("+x+")");
+				
+				//write the content into svg file
 				TransformerFactory transformerFactory = TransformerFactory.newInstance();
 				Transformer transformer = transformerFactory.newTransformer();
 				DOMSource source = new DOMSource(doc);
 				StreamResult result = new StreamResult(new File(filepath));
 				transformer.transform(source, result);
 
-				
-
 			} catch (ParserConfigurationException pce) {
-				JOptionPane.showMessageDialog(null, pce.toString(), "InfoBox: ", JOptionPane.INFORMATION_MESSAGE);
-				
+				pce.printStackTrace();
 			} catch (TransformerException tfe) {
-				JOptionPane.showMessageDialog(null, tfe.toString(), "InfoBox: " , JOptionPane.INFORMATION_MESSAGE);
 				tfe.printStackTrace();
 			} catch (IOException ioe) {
-				JOptionPane.showMessageDialog(null, ioe.toString(), "InfoBox: " , JOptionPane.INFORMATION_MESSAGE);
 				ioe.printStackTrace();
 			} catch (SAXException sae) {
-				JOptionPane.showMessageDialog(null, sae.toString(), "InfoBox: " , JOptionPane.INFORMATION_MESSAGE);
 				sae.printStackTrace();
-			}
-				
+			}				
 			
 			//adding the SVG file to the SB2
 			FileInputStream fis = null;
