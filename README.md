@@ -14,7 +14,7 @@ fr
 
   Comment l'installer : exporter le projet Java dans un fichier jar  
   placer le fichier jar dans le dossier des plugins de SweetHome3D.
-  Il n'y a rien d'autre à faire, SweetHome 3D fera le reste.
+  Il n'y a rien d'autre à faire, SweetHome 3D s'occupe du reste.
   
 Projet réalisé par :
 - Cédric "zeptoline" Berland
