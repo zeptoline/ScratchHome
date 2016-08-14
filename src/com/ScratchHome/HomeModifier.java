@@ -9,10 +9,12 @@ import com.eteks.sweethome3d.model.HomePieceOfFurniture;
  *
  */
 public class HomeModifier {
-	public static void changeColor(int hash, int color, Home home) {
+	public static void changeColor(String hash, int color, Home home) {
 		for (HomePieceOfFurniture fourniture : home.getFurniture()) {
-			if(fourniture.hashCode() == hash)
-				fourniture.setColor(color);
+			
+			if(fourniture.getDescription() != null)
+				if(fourniture.getDescription().equals(hash))
+					fourniture.setColor(color);
 		}
 	}
 }

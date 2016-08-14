@@ -3,14 +3,18 @@ package src.com.ScratchHome;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import javax.swing.JOptionPane;
+
 import com.eteks.sweethome3d.model.Home;
-import com.eteks.sweethome3d.model.HomePieceOfFurniture;
 
 /**
  * 
@@ -96,9 +100,15 @@ public class ScratchListener implements Runnable{
 			controlpanel.changeMessage(language.get("ServerTerminated"));
 
 		} catch (IOException e) {
-			e.printStackTrace();
+			JOptionPane.showMessageDialog(null,getStackTrace(e));
 		}
 	}
+	public static String getStackTrace(Throwable aThrowable) {
+	    final Writer result = new StringWriter();
+	    final PrintWriter printWriter = new PrintWriter(result);
+	    aThrowable.printStackTrace(printWriter);
+	    return result.toString();
+	  }
 
 	/**
 	 * Function to handle incoming messages from Scratch
@@ -210,31 +220,27 @@ public class ScratchListener implements Runnable{
 			if (cmd[2].equals(language.get("yellow").toLowerCase())) {
 				color = -256;
 			}
-			String listofFour= " - ";
-			for (HomePieceOfFurniture four : home.getFurniture()) {
-				listofFour += four.hashCode()+" - ";
-			}
+			
+			controlpanel.changeMessage(cmd[0]+" -- "+cmd[1]+" -- "+cmd[2]+" -- "+color);
 
-			controlpanel.changeMessage(cmd[0]+" -- "+cmd[1]+" -- "+cmd[2]+" -- "+color+listofFour);
-
-			HomeModifier.changeColor(Integer.valueOf(cmd[1]), color, this.home);
+			HomeModifier.changeColor(cmd[1], color, this.home);
 		}else if (cmd[0].startsWith("switchOnOff")) {
 			//bloc :   	SwitchOnOff/ID/Allumer
 			//list :	SwitchOnOff/Allumer/ID
 			
 			int color = 0;
 			String modifier = "";
-			int hash = -1; 
+			String hash = ""; 
 			if(cmd[1].equals(language.get("On")) || cmd[1].equals(language.get("Off"))){
 
 				cmd[2] = cmd[2].replaceAll("%..", "");
 				cmd[2] = cmd[2].replaceAll("[\\D]", "");
-				hash = Integer.valueOf(cmd[2]);
+				hash = cmd[2];
 				modifier = cmd[1];
 			} else {
 				cmd[1] = cmd[1].replaceAll("%..", "");
 				cmd[1] = cmd[1].replaceAll("[\\D]", "");
-				hash = Integer.valueOf(cmd[1]);
+				hash = cmd[1];
 				modifier = cmd[2];
 			}
 			

@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Properties;
@@ -38,7 +41,7 @@ import com.eteks.sweethome3d.viewcontroller.HomeController;
 
 /**
  *Create a SB2 file (actually a ZIP), that is the Scratch project format, by creating a JSON and SVG to represent SH3D scene's objects
- *
+ * TODO: Refaire la génération de l'export en utilisant des objets, qui serait beaucoup plus facile à utiliser
  */
 public class JSONAction extends PluginAction{
 
@@ -55,11 +58,21 @@ public class JSONAction extends PluginAction{
      */
 	public void execute() {
 		if(!(home.getFurniture().isEmpty())) {
-			createJSON(this.home);
+			try {
+				createJSON(this.home);
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(null,"Une exception a été rencontrée.\nLe message d'erreur :\n"+getStackTrace(e));
+			}
 		} else {
 			JOptionPane.showMessageDialog(null,language.get("NoObject"));
 		}
 	}
+	public static String getStackTrace(Throwable aThrowable) {
+	    final Writer result = new StringWriter();
+	    final PrintWriter printWriter = new PrintWriter(result);
+	    aThrowable.printStackTrace(printWriter);
+	    return result.toString();
+	  }
 
 	/**
 	 * JSONAction Constructor.
@@ -124,11 +137,18 @@ public class JSONAction extends PluginAction{
 		ArrayList<String> listElem = new ArrayList<String>();
 		//Adding objects to the previous list
 		for (HomePieceOfFurniture fourniture : home.getFurniture()) {
+			
+			if(fourniture.getDescription() == null) {
+				fourniture.setDescription(""+fourniture.hashCode());
+				
+				JOptionPane.showMessageDialog(null,fourniture.getDescription());
+			}
 			if(allObject==true){
-				listElem.add(fourniture.getName()+"("+fourniture.hashCode()+")");
+				JOptionPane.showMessageDialog(null,"hallo!");
+				listElem.add(fourniture.getName()+"("+fourniture.getDescription()+")");
 			}else{
 				if(fourniture instanceof Light){
-					listElem.add(fourniture.getName()+"("+fourniture.hashCode()+")");
+					listElem.add(fourniture.getName()+"("+fourniture.getDescription()+")");
 				}
 			}
 
