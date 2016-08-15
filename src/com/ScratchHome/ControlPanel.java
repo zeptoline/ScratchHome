@@ -49,7 +49,7 @@ public class ControlPanel implements Runnable{
 	 * Launch the control panel
 	 */
 	public void run() {
-		final JFrame frame = new JFrame(language.get("ControlPanel"));
+		final JFrame frame = new JFrame(language.get("ControlPanel") + " - " + language.get("ScratchHomeVersion"));
 		JPanel panel = new JPanel(new BorderLayout());
 		
 		terminate.addActionListener(new ActionListener() {

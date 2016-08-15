@@ -61,7 +61,7 @@ public class JSONAction extends PluginAction{
 			try {
 				createJSON(this.home);
 			} catch (Exception e) {
-				JOptionPane.showMessageDialog(null,"Une exception a été rencontrée.\nLe message d'erreur :\n"+getStackTrace(e));
+				JOptionPane.showMessageDialog(null,"Une exception a été rencontrée.\nVeuillez la signaler sur le github du projet\nhttps://github.com/zeptoline/ScratchHome/issues\nLe message d'erreur :\n"+getStackTrace(e));
 			}
 		} else {
 			JOptionPane.showMessageDialog(null,language.get("NoObject"));
@@ -140,11 +140,8 @@ public class JSONAction extends PluginAction{
 			
 			if(fourniture.getDescription() == null) {
 				fourniture.setDescription(""+fourniture.hashCode());
-				
-				JOptionPane.showMessageDialog(null,fourniture.getDescription());
 			}
 			if(allObject==true){
-				JOptionPane.showMessageDialog(null,"hallo!");
 				listElem.add(fourniture.getName()+"("+fourniture.getDescription()+")");
 			}else{
 				if(fourniture instanceof Light){
